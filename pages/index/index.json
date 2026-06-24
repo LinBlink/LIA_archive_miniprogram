@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "閾界档案馆",
+  "navigationBarBackgroundColor": "#0A0D0F",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#0A0D0F",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "light"
+}

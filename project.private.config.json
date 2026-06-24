@@ -1,0 +1,15 @@
+{
+  "libVersion": "3.16.2",
+  "projectname": "LIA_archive_miniprogram",
+  "setting": {
+    "urlCheck": true,
+    "coverView": false,
+    "lazyloadPlaceholderEnable": false,
+    "skylineRenderEnable": false,
+    "preloadBackgroundData": false,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": false,
+    "compileHotReLoad": true,
+    "bigPackageSizeSupport": false
+  }
+}

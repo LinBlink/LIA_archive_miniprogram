@@ -1,0 +1,82 @@
+/* pages/profile/profile.wxss */
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 28rpx;
+  padding: 48rpx 32rpx 32rpx;
+  border-bottom: 1rpx solid var(--border);
+  background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-base) 100%);
+}
+
+.user-avatar-wrap { position: relative; flex-shrink: 0; }
+
+.user-avatar {
+  width: 120rpx; height: 120rpx;
+  border-radius: 50%;
+  border: 2rpx solid var(--folk-border);
+}
+
+.user-avatar-placeholder {
+  width: 120rpx; height: 120rpx;
+  border-radius: 50%;
+  background-color: var(--bg-card);
+  border: 2rpx solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.avatar-icon { font-size: 48rpx; color: var(--text-void); }
+
+.user-level-badge {
+  position: absolute; bottom: -4rpx; right: -4rpx;
+  background-color: var(--accent-red);
+  color: var(--text-primary);
+  font-size: 16rpx; font-family: var(--font-mono);
+  padding: 2rpx 8rpx; border-radius: 10rpx;
+}
+
+.user-name    { display: block; font-size: 36rpx; font-weight: 600; color: var(--text-primary);   margin-bottom: 8rpx; }
+.user-id-str  { display: block; font-size: 20rpx; color: var(--text-void);    font-family: var(--font-mono); letter-spacing: 2rpx; margin-bottom: 12rpx; }
+.user-tag-row { display: flex; gap: 10rpx; }
+
+.user-tag {
+  background-color: var(--bg-green-dim);
+  border: 1rpx solid var(--border-green);
+  color: var(--accent-green);
+  font-size: 20rpx; font-family: var(--font-mono);
+  padding: 4rpx 14rpx; border-radius: 4rpx;
+}
+
+.my-stats    { display: flex; align-items: center; padding: 32rpx; border-bottom: 1rpx solid var(--border); }
+.my-stat-item{ flex: 1; display: flex; flex-direction: column; align-items: center; }
+.my-stat-num { font-size: 44rpx; font-weight: 700; color: var(--text-primary); font-family: var(--font-mono); }
+.my-stat-label{ font-size: 20rpx; color: var(--text-ghost); margin-top: 8rpx; }
+.stat-divider { width: 1rpx; height: 60rpx; background-color: var(--border); }
+
+.menu-section { padding: 24rpx; display: flex; flex-direction: column; gap: 20rpx; }
+
+.menu-group {
+  background-color: var(--bg-card);
+  border: 1rpx solid var(--border);
+  border-radius: 8rpx; overflow: hidden;
+}
+
+.menu-item {
+  display: flex; align-items: center;
+  padding: 28rpx; border-bottom: 1rpx solid var(--border-faint);
+  gap: 20rpx;
+}
+
+.menu-item:last-child { border-bottom: none; }
+
+.menu-icon  { font-size: 28rpx; color: var(--accent-green); flex-shrink: 0; }
+.menu-label { flex: 1; font-size: 28rpx; color: var(--text-secondary); }
+.menu-arrow { font-size: 36rpx; color: var(--text-void); }
+
+.system-info { padding: 24rpx 32rpx 40rpx; display: flex; flex-direction: column; gap: 8rpx; align-items: center; }
+
+.sys-info-text {
+  font-size: 18rpx; color: var(--text-void);
+  font-family: var(--font-mono); letter-spacing: 1rpx;
+  text-align: center; display: block;
+}

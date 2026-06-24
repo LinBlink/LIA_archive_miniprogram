@@ -1,0 +1,103 @@
+<!-- pages/search/search.wxml -->
+<view class="page-container">
+
+  <!-- 搜索框 -->
+  <view class="search-wrap">
+    <view class="search-box">
+      <text class="search-prefix">></text>
+      <input
+        class="search-input"
+        placeholder="检索关键词、地点、事件..."
+        placeholder-style="color: #6A6A6A; font-family: 'Courier New', monospace;"
+        value="{{keyword}}"
+        bindinput="onInput"
+        bindconfirm="onSearch"
+        confirm-type="search"
+        focus="{{false}}"
+      />
+      <view class="search-clear" bindtap="onClear" wx:if="{{keyword}}">
+        <text>×</text>
+      </view>
+    </view>
+    <view class="search-btn" bindtap="onSearch">
+      <text>检索</text>
+    </view>
+  </view>
+
+  <!-- 热门标签 -->
+  <view class="section" wx:if="{{!keyword && !searched}}">
+    <view class="section-title">
+      <text class="section-code">HOT</text>
+      <text class="section-label">热门检索</text>
+    </view>
+    <view class="tag-cloud">
+      <view
+        class="tag-item"
+        wx:for="{{hotTags}}"
+        wx:key="*this"
+        bindtap="onTagTap"
+        data-tag="{{item}}"
+      >{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 地区分布 -->
+  <view class="section" wx:if="{{!keyword && !searched}}">
+    <view class="section-title">
+      <text class="section-code">GEO</text>
+      <text class="section-label">按地区浏览</text>
+    </view>
+    <view class="region-list">
+      <view
+        class="region-item"
+        wx:for="{{regions}}"
+        wx:key="name"
+        bindtap="onRegionTap"
+        data-region="{{item.name}}"
+      >
+        <text class="region-name">{{item.name}}</text>
+        <text class="region-count">{{item.count}} 条档案</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索结果 -->
+  <view class="results-wrap" wx:if="{{searched}}">
+    <view class="results-header">
+      <text class="results-count">找到 {{resultList.length}} 条记录</text>
+      <text class="results-keyword">「{{keyword}}」</text>
+    </view>
+
+    <view wx:if="{{resultList.length > 0}}">
+      <view
+        class="archive-card result-card"
+        wx:for="{{resultList}}"
+        wx:key="id"
+        bindtap="onCardTap"
+        data-id="{{item.id}}"
+      >
+        <view class="card-side-bar card-side-bar--{{item.type}}"></view>
+        <view class="card-body">
+          <view class="card-meta-row">
+            <text class="archive-no">{{item.archiveNo}}</text>
+            <text class="badge {{item.typeInfo.className}}">{{item.typeInfo.code}}</text>
+          </view>
+          <view class="card-title">{{item.title}}</view>
+          <view class="card-preview">{{item.contentPreview}}</view>
+          <view class="card-footer">
+            <view class="status-badge {{item.statusInfo.className}}">
+              <text>{{item.statusInfo.dot}} {{item.statusInfo.label}}</text>
+            </view>
+            <text class="card-date">{{item.occurredAtFmt}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:else>
+      <text class="empty-icon">⬡</text>
+      <text class="empty-state-text">未找到相关档案记录\n尝试更换关键词</text>
+    </view>
+  </view>
+
+</view>

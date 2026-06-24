@@ -1,0 +1,251 @@
+/* =============================================
+   閾界档案馆 - 全局样式
+   视觉语言：机密档案 / 调查局内部文件
+   ============================================= */
+
+/* ══════════════════════════════════════════════
+   § 色彩系统 TOKEN —— 只需改这里
+   ══════════════════════════════════════════════ */
+page {
+  /* 背景层级 */
+  --bg-private:     #1A1020;   /* 私密标记暗底 */
+  --border-private: #3A1A5A;   /* 私密标记边框 */
+  --text-private:   #7A4A9A;   /* 私密标记文字 */
+  --bg-closed:      #1A1A2A;   /* 已完结 badge 背景（冷紫灰）*/
+  --border-closed:  #2A2A3A;   /* 已完结 badge 边框 */
+  --bg-base:        #0A0D0F;   /* 最底层页面背景 */
+  --bg-card:        #0F1318;   /* 卡片 / 面板 */
+  --bg-elevated:    #161C22;   /* 悬浮层 / 高亮行 */
+  --bg-sunken:      #0A0D12;   /* 面板标题栏（比卡片更暗）*/
+
+  /* 强调色 */
+  --accent-red:     #C8392B;   /* 警示红：官方档案、危险、ONGOING */
+  --accent-red-dim: #2A1A1A;   /* 警示红暗底（badge 背景）*/
+  --accent-red-mid: #4A2020;   /* 警示红中间边框 */
+  --accent-green:   #8dffdf;   /* 军绿：系统状态、标签、地点 */
+  --accent-orange:  #C87040;   /* 警戒橙：第三方档案 */
+
+  /* 文字层级 */
+  --text-primary:   #E8DCC8;   /* 泛黄主文字 */
+  --text-secondary: #e5e5e5;   /* 次级正文 */
+  --text-muted:     #aaaaaa;   /* 辅助说明 */
+  --text-faint:     #9da1a7;   /* 更弱的标签 */
+  --text-ghost:     #abb2b8;   /* 极弱（预览、时间戳）*/
+  --text-phantom:   #6d777f;   /* 几乎不可见（水印级）*/
+  --text-void:      #92a3b4;   /* 档案编号、装饰文字 */
+
+  /* 边框 */
+  --border:         #1F2832;   /* 主边框 */
+  --border-faint:   #0F131A;   /* 列表行内分割 */
+  --border-green:   #1A3A2A;   /* 军绿系边框 */
+  --bg-green-dim:   #0A1A14;   /* 军绿暗底（证据 tag 背景）*/
+
+  /* 类型色：民间档案 */
+  --folk-bg:        #1A2430;
+  --folk-text:      #6B7888;
+  --folk-border:    #2A3A4A;
+  --folk-bar:       #4A5A6A;   /* 左侧竖线 */
+
+  /* 类型色：官方档案 */
+  --official-bg:    #2A1A1A;
+  --official-text:  #C8392B;
+  --official-border:#4A2020;
+  --official-bar:   #C8392B;
+
+  /* 类型色：第三方档案 */
+  --third-bg:       #2A1A10;
+  --third-text:     #C87040;
+  --third-border:   #4A2A10;
+  --third-bar:      #C87040;
+
+  /* 字体 */
+  --font-mono:      'Courier New', monospace;
+  --font-ui:        -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  /* ── 应用到根节点 ── */
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+}
+
+
+/* ══════════════════════════════════════════════
+   § 通用布局
+   ══════════════════════════════════════════════ */
+
+.page-container {
+  min-height: 100vh;
+  background-color: var(--bg-base);
+  padding-bottom: 120rpx;
+}
+
+/* ── 页面标题栏 ── */
+.page-header {
+  padding: 40rpx 32rpx 24rpx;
+  border-bottom: 1rpx solid var(--border);
+}
+
+.page-header-eyebrow {
+  font-size: 20rpx;
+  color: var(--accent-green);
+  letter-spacing: 4rpx;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  margin-bottom: 8rpx;
+}
+
+.page-header-title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  letter-spacing: 2rpx;
+}
+
+
+/* ══════════════════════════════════════════════
+   § 档案卡片基础
+   ══════════════════════════════════════════════ */
+
+.archive-card {
+  background-color: var(--bg-card);
+  border: 1rpx solid var(--border);
+  border-radius: 8rpx;
+  margin: 0 24rpx 24rpx;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 左侧机密竖线 */
+.archive-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6rpx;
+  background-color: var(--accent-red);
+}
+
+.archive-card-inner {
+  padding: 28rpx 28rpx 28rpx 36rpx;
+}
+
+
+/* ══════════════════════════════════════════════
+   § 徽章 / 类型标签
+   ══════════════════════════════════════════════ */
+
+.badge {
+  display: inline-block;
+  padding: 4rpx 14rpx;
+  border-radius: 4rpx;
+  font-size: 20rpx;
+  font-family: var(--font-mono);
+  letter-spacing: 2rpx;
+  font-weight: 600;
+}
+
+.badge-type-folk {
+  background-color: var(--folk-bg);
+  color: var(--folk-text);
+  border: 1rpx solid var(--folk-border);
+}
+
+.badge-type-official {
+  background-color: var(--official-bg);
+  color: var(--official-text);
+  border: 1rpx solid var(--official-border);
+}
+
+.badge-type-third {
+  background-color: var(--third-bg);
+  color: var(--third-text);
+  border: 1rpx solid var(--third-border);
+}
+
+.badge-status-ongoing {
+  background-color: var(--accent-red-dim);
+  color: var(--accent-red);
+  border: 1rpx solid var(--accent-red-mid);
+}
+
+.badge-status-closed {
+  background-color: var(--bg-closed);
+  color: var(--text-faint);
+  border: 1rpx solid var(--border-closed);
+}
+
+
+/* ══════════════════════════════════════════════
+   § 通用组件
+   ══════════════════════════════════════════════ */
+
+/* 分割线 */
+.divider {
+  height: 1rpx;
+  background-color: var(--border);
+  margin: 0 24rpx;
+}
+
+/* 档案编号（水印风格）*/
+.archive-id {
+  font-size: 18rpx;
+  color: var(--text-void);
+  font-family: var(--font-mono);
+  letter-spacing: 3rpx;
+}
+
+/* 按钮 */
+.btn-primary {
+  background-color: var(--accent-red);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 6rpx;
+  padding: 22rpx 40rpx;
+  font-size: 28rpx;
+  font-family: var(--font-mono);
+  letter-spacing: 2rpx;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1rpx solid var(--folk-border);
+  border-radius: 6rpx;
+  padding: 20rpx 36rpx;
+  font-size: 26rpx;
+}
+
+/* 加载中 */
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 60rpx;
+}
+
+.loading-text {
+  font-size: 22rpx;
+  color: var(--accent-green);
+  font-family: var(--font-mono);
+  letter-spacing: 4rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 60rpx;
+}
+
+.empty-state-text {
+  font-size: 26rpx;
+  color: var(--text-phantom);
+  font-family: var(--font-mono);
+  letter-spacing: 2rpx;
+  margin-top: 32rpx;
+  text-align: center;
+}

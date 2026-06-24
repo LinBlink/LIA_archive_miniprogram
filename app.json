@@ -1,0 +1,43 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/detail/detail",
+    "pages/search/search",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#0A0D0F",
+    "navigationBarTitleText": "閾界档案馆",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#0A0D0F"
+  },
+  "tabBar": {
+    "color": "#6B7888",
+    "selectedColor": "#E8DCC8",
+    "backgroundColor": "#0F1318",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "档案库",
+        "iconPath": "images/tab-archive.png",
+        "selectedIconPath": "images/tab-archive-active.png"
+      },
+      {
+        "pagePath": "pages/search/search",
+        "text": "检索",
+        "iconPath": "images/tab-search.png",
+        "selectedIconPath": "images/tab-search-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tab-profile.png",
+        "selectedIconPath": "images/tab-profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

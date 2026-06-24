@@ -1,0 +1,201 @@
+<!-- pages/detail/detail.wxml - 档案详情页 -->
+<view class="page-container" wx:if="{{archive}}">
+
+  <!-- ══ 顶部档案编号横幅 ══ -->
+  <view class="archive-banner">
+    <view class="banner-grid-line banner-grid-line--top"></view>
+    <view class="banner-content">
+      <view class="banner-left">
+        <text class="banner-no">{{archive.archiveNo}}</text>
+        <text class="banner-label">ANOMALY CASE FILE</text>
+      </view>
+      <view class="banner-right">
+        <view class="banner-type-badge {{archive.typeInfo.className}}">{{archive.typeInfo.label}}</view>
+      </view>
+    </view>
+    <view class="banner-grid-line banner-grid-line--bottom"></view>
+  </view>
+
+  <!-- ══ 标题区 ══ -->
+  <view class="title-section">
+    <view class="title-main">{{archive.title}}</view>
+    <view class="title-status-row">
+      <view class="status-pill {{archive.statusInfo.className}}">
+        <text class="status-pulse" wx:if="{{archive.status === 0}}">●</text>
+        <text class="status-pulse-static" wx:else>◆</text>
+        <text>{{archive.statusInfo.label}}</text>
+      </view>
+      <view class="title-meta">
+        <text class="meta-lang">{{archive.langCode}}</text>
+        <text class="meta-dot">·</text>
+        <text class="meta-views">浏览 {{archive.view_count}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ══ 基础信息面板 ══ -->
+  <view class="info-panel">
+    <view class="panel-header">
+      <text class="panel-header-code">§ 01</text>
+      <text class="panel-header-text">基础信息</text>
+    </view>
+
+    <view class="info-row" wx:if="{{archive.occurred_at}}">
+      <text class="info-key">事发时间</text>
+      <text class="info-val">{{archive.occurredAtFmt}}</text>
+    </view>
+    <view class="info-row" wx:else>
+      <text class="info-key">事发时间</text>
+      <text class="info-val info-val--unknown">未知</text>
+    </view>
+
+    <view class="info-row" wx:if="{{archive.location_desc}}">
+      <text class="info-key">发生地点</text>
+      <text class="info-val">◎ {{archive.location_desc}}</text>
+    </view>
+
+    <view class="info-row">
+      <text class="info-key">录入时间</text>
+      <text class="info-val">{{archive.createdAtFmt}}</text>
+    </view>
+
+    <view class="info-row">
+      <text class="info-key">最后更新</text>
+      <text class="info-val">{{archive.updatedAtFmt}}</text>
+    </view>
+
+    <view class="info-row" wx:if="{{archive.closed_at}}">
+      <text class="info-key">结案时间</text>
+      <text class="info-val">{{archive.closedAtFmt}}</text>
+    </view>
+  </view>
+
+  <!-- ══ 档案正文 ══ -->
+  <view class="content-panel" wx:if="{{archive.content}}">
+    <view class="panel-header">
+      <text class="panel-header-code">§ 02</text>
+      <text class="panel-header-text">事件档案</text>
+    </view>
+    <view class="content-body">
+      <text class="content-text" selectable>{{archive.content}}</text>
+    </view>
+    <!-- 打字机光标装饰 -->
+    <view class="content-end-marker">
+      <text class="end-marker-text">[ EOF ]</text>
+    </view>
+  </view>
+
+  <!-- ══ 人物关系 ══ -->
+  <view class="graph-panel" wx:if="{{archive.characters && archive.characters.length > 0}}">
+    <view class="panel-header">
+      <text class="panel-header-code">§ 03</text>
+      <text class="panel-header-text">人物关系</text>
+    </view>
+    <view class="character-list">
+      <view class="character-item" wx:for="{{archive.characters}}" wx:key="id">
+        <view class="character-avatar">
+          <text class="character-initial">{{item.name[0]}}</text>
+        </view>
+        <view class="character-info">
+          <text class="character-name">{{item.name}}</text>
+          <text class="character-role">{{item.role}}</text>
+          <text class="character-desc" wx:if="{{item.desc}}">{{item.desc}}</text>
+        </view>
+        <view class="character-status-dot" style="background-color: {{item.color || '#4A7C6F'}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ══ 时间线 ══ -->
+  <view class="timeline-panel" wx:if="{{archive.timelines && archive.timelines.length > 0}}">
+    <view class="panel-header">
+      <text class="panel-header-code">§ 04</text>
+      <text class="panel-header-text">事件时间线</text>
+    </view>
+    <view class="timeline">
+      <view class="timeline-item" wx:for="{{archive.timelines}}" wx:key="index">
+        <view class="timeline-left">
+          <view class="timeline-dot {{index === 0 ? 'timeline-dot--first' : ''}}"></view>
+          <view class="timeline-line" wx:if="{{index < archive.timelines.length - 1}}"></view>
+        </view>
+        <view class="timeline-right">
+          <text class="timeline-time">{{item.time}}</text>
+          <text class="timeline-event">{{item.event}}</text>
+          <text class="timeline-detail" wx:if="{{item.detail}}">{{item.detail}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ══ 证据链 ══ -->
+  <view class="evidence-panel" wx:if="{{archive.evidence && archive.evidence.length > 0}}">
+    <view class="panel-header">
+      <text class="panel-header-code">§ 05</text>
+      <text class="panel-header-text">证据链线索</text>
+    </view>
+    <view class="evidence-list">
+      <view class="evidence-item" wx:for="{{archive.evidence}}" wx:key="index">
+        <view class="evidence-index">{{index + 1 < 10 ? '0' + (index + 1) : index + 1}}</view>
+        <view class="evidence-content">
+          <text class="evidence-title">{{item.title}}</text>
+          <text class="evidence-desc" wx:if="{{item.desc}}">{{item.desc}}</text>
+          <view class="evidence-tags" wx:if="{{item.tags}}">
+            <text class="evidence-tag" wx:for="{{item.tags}}" wx:key="*this">#{{item}}</text>
+          </view>
+        </view>
+        <view class="evidence-credibility" wx:if="{{item.credibility}}">
+          <text class="credibility-label">可信度</text>
+          <text class="credibility-value">{{item.credibility}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ══ 参考链接 ══ -->
+  <view class="refs-panel" wx:if="{{archive.ref_links && archive.ref_links.length > 0}}">
+    <view class="panel-header">
+      <text class="panel-header-code">§ 06</text>
+      <text class="panel-header-text">参考来源</text>
+    </view>
+    <view class="ref-list">
+      <view
+        class="ref-item"
+        wx:for="{{archive.ref_links}}"
+        wx:key="index"
+        bindtap="onRefTap"
+        data-url="{{item.url}}"
+      >
+        <view class="ref-icon">⊞</view>
+        <view class="ref-info">
+          <text class="ref-title">{{item.title || item.url}}</text>
+          <text class="ref-url">{{item.url}}</text>
+        </view>
+        <text class="ref-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ══ 底部操作栏 ══ -->
+  <view class="action-bar">
+    <view class="action-btn action-btn--share" bindtap="onShare">
+      <text class="action-icon">⊿</text>
+      <text>分享</text>
+    </view>
+    <view class="action-btn action-btn--collect" bindtap="onCollect">
+      <text class="action-icon">{{isCollected ? '◈' : '◇'}}</text>
+      <text>{{isCollected ? '已收藏' : '收藏'}}</text>
+    </view>
+  </view>
+
+  <!-- 底部安全区 -->
+  <view style="height: 160rpx;"></view>
+
+</view>
+
+<!-- 加载中状态 -->
+<view class="loading-page" wx:else>
+  <view class="loading-terminal">
+    <text class="terminal-text">LOADING CASE FILE...</text>
+    <view class="terminal-cursor"></view>
+  </view>
+</view>
