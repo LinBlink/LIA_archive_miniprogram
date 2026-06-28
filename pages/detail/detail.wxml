@@ -18,7 +18,7 @@
 
   <!-- ══ 标题区 ══ -->
   <view class="title-section">
-    <view class="title-main">{{archive.title}}</view>
+    <view class="title-main {{archive.statusInfo.className === 'badge-status-ongoing' ? 'title-shiver' : ''}}">{{archive.title}}</view>
     <view class="title-status-row">
       <view class="status-pill {{archive.statusInfo.className}}">
         <text class="status-pulse" wx:if="{{archive.status === 0}}">●</text>
@@ -33,14 +33,14 @@
     </view>
   </view>
 
-  <!-- ══ 基础信息面板 ══ -->
-  <view class="info-panel">
+  <!-- ══ § 01 基础信息面板 ══ -->
+  <view class="info-panel" id="sec-01">
     <view class="panel-header">
       <text class="panel-header-code">§ 01</text>
       <text class="panel-header-text">基础信息</text>
     </view>
 
-    <view class="info-row" wx:if="{{archive.occurred_at}}">
+    <view class="info-row" wx:if="{{archive.occurredAt}}">
       <text class="info-key">事发时间</text>
       <text class="info-val">{{archive.occurredAtFmt}}</text>
     </view>
@@ -64,95 +64,242 @@
       <text class="info-val">{{archive.updatedAtFmt}}</text>
     </view>
 
-    <view class="info-row" wx:if="{{archive.closed_at}}">
+    <view class="info-row" wx:if="{{archive.closedAt}}">
       <text class="info-key">结案时间</text>
       <text class="info-val">{{archive.closedAtFmt}}</text>
     </view>
+
+    <!-- 标签 -->
+    <view class="info-row info-row--tags" wx:if="{{archive.tags && archive.tags.length > 0}}">
+      <text class="info-key">标签</text>
+      <view class="archive-tags">
+        <text class="archive-tag" wx:for="{{archive.tags}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 作者 -->
+    <view class="info-row info-row--author" wx:if="{{archive.author}}">
+      <text class="info-key">投稿人</text>
+      <view class="author-info">
+        <image class="author-avatar" wx:if="{{archive.author.avatar_url && !authorAvatarError}}" src="{{archive.author.avatar_url}}" mode="aspectFill" lazy-load binderror="onAuthorAvatarError" />
+        <text class="author-avatar-placeholder" wx:else>◈</text>
+        <text class="author-name">{{archive.author.nick_name || archive.author.phone || '匿名'}}</text>
+        <text class="author-level" wx:if="{{archive.author.level}}">Lv.{{archive.author.level}}</text>
+      </view>
+    </view>
   </view>
 
-  <!-- ══ 档案正文 ══ -->
-  <view class="content-panel" wx:if="{{archive.content}}">
+  <!-- ══ § 02 事件档案 ══ -->
+  <view class="content-panel" id="sec-02" wx:if="{{contentSegments.length > 0}}">
     <view class="panel-header">
       <text class="panel-header-code">§ 02</text>
       <text class="panel-header-text">事件档案</text>
     </view>
     <view class="content-body">
-      <text class="content-text" selectable>{{archive.content}}</text>
+      <block wx:for="{{contentSegments}}" wx:key="index">
+        <view wx:if="{{item.type === 'h1'}}" class="md-h1" id="{{item.navId}}">{{item.text}}</view>
+        <view wx:elif="{{item.type === 'h2'}}" class="md-h2" id="{{item.navId}}">{{item.text}}</view>
+        <view wx:elif="{{item.type === 'h3'}}" class="md-h3">{{item.text}}</view>
+        <view wx:elif="{{item.type === 'hr'}}" class="md-hr"></view>
+        <view wx:elif="{{item.type === 'blockquote'}}" class="md-blockquote">
+          <rich-text nodes="{{item.html}}" />
+        </view>
+        <view wx:elif="{{item.type === 'list'}}" class="md-list">
+          <view wx:for="{{item.items}}" wx:key="index" wx:for-item="li" class="md-list-item">
+            <text class="md-list-bullet">·</text>
+            <view class="md-list-text"><rich-text nodes="{{li}}" /></view>
+          </view>
+        </view>
+        <view wx:elif="{{item.type === 'p'}}" class="md-p">
+          <rich-text nodes="{{item.html}}" />
+        </view>
+        <view wx:elif="{{item.type === 'image' && !item.imgHidden}}" class="md-image-block">
+          <!-- 骨架屏：图片加载完成或出错前可见 -->
+          <view class="md-img-skeleton" wx:if="{{!item.imgLoaded}}"></view>
+          <!-- 真实图片：加载完成后才显示 -->
+          <image
+            wx:if="{{item.imgLoaded}}"
+            class="md-image"
+            src="{{item.src}}"
+            mode="widthFix"
+          />
+          <!-- 预加载触发器：不可见，仅用于发起请求并监听事件 -->
+          <image
+            wx:if="{{!item.imgLoaded}}"
+            class="md-img-preloader"
+            src="{{item.src}}"
+            lazy-load
+            binderror="onMdImageError"
+            bindload="onMdImageLoad"
+            data-index="{{index}}"
+          />
+          <text class="md-image-alt" wx:if="{{item.alt && item.imgLoaded}}">{{item.alt}}</text>
+        </view>
+        <view wx:elif="{{item.type === 'video'}}" class="video-seg">
+          <video class="seg-video" src="{{item.src}}" controls show-mute-btn />
+          <text class="seg-video-url">{{item.src}}</text>
+        </view>
+        <view wx:elif="{{item.type === 'table'}}" class="md-table-wrap">
+          <scroll-view scroll-x class="md-table-scroll">
+            <view class="md-table" style="min-width: {{item.tableWidth}}">
+              <view class="md-table-head">
+                <view class="md-th" wx:for="{{item.headers}}" wx:key="index" wx:for-item="th" wx:for-index="thIdx">
+                  <rich-text nodes="{{th}}" />
+                </view>
+              </view>
+              <view class="md-table-row {{rowIdx % 2 === 1 ? 'md-table-row--alt' : ''}}"
+                    wx:for="{{item.rows}}" wx:key="index" wx:for-item="row" wx:for-index="rowIdx">
+                <view class="md-td" wx:for="{{row}}" wx:key="index" wx:for-item="cell" wx:for-index="cellIdx">
+                  <rich-text nodes="{{cell}}" />
+                </view>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+      </block>
     </view>
-    <!-- 打字机光标装饰 -->
     <view class="content-end-marker">
       <text class="end-marker-text">[ EOF ]</text>
     </view>
   </view>
 
-  <!-- ══ 人物关系 ══ -->
-  <view class="graph-panel" wx:if="{{archive.characters && archive.characters.length > 0}}">
+  <!-- ══ § 03 人物关系 ══ -->
+  <view class="graph-panel" id="sec-03" wx:if="{{archive.characters && archive.characters.nodes && archive.characters.nodes.length > 0}}">
     <view class="panel-header">
       <text class="panel-header-code">§ 03</text>
       <text class="panel-header-text">人物关系</text>
     </view>
-    <view class="character-list">
-      <view class="character-item" wx:for="{{archive.characters}}" wx:key="id">
-        <view class="character-avatar">
-          <text class="character-initial">{{item.name[0]}}</text>
+
+    <!-- 人物节点 -->
+    <view class="char-nodes">
+      <view class="char-node" wx:for="{{archive.characters.nodes}}" wx:key="id">
+        <view class="char-node-header">
+          <view class="char-avatar">
+            <text class="char-initial">{{item.name[0]}}</text>
+          </view>
+          <view class="char-node-meta">
+            <text class="char-name">{{item.name}}</text>
+            <text class="char-role">{{item.role}}</text>
+          </view>
         </view>
-        <view class="character-info">
-          <text class="character-name">{{item.name}}</text>
-          <text class="character-role">{{item.role}}</text>
-          <text class="character-desc" wx:if="{{item.desc}}">{{item.desc}}</text>
+        <view class="char-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+          <text class="char-tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag" wx:for-index="tagIdx">#{{tag}}</text>
         </view>
-        <view class="character-status-dot" style="background-color: {{item.color || '#4A7C6F'}}"></view>
+        <text class="char-desc" wx:if="{{item.description}}">{{item.description}}</text>
+      </view>
+    </view>
+
+    <!-- 关系边 -->
+    <view class="char-edges" wx:if="{{archive.characters.edges && archive.characters.edges.length > 0}}">
+      <view class="edges-section-label">
+        <text class="edges-section-text">— 关系链 —</text>
+      </view>
+      <view class="char-edge" wx:for="{{archive.characters.edges}}" wx:key="index">
+        <view class="char-edge-summary {{item.interactions && item.interactions.length > 0 ? 'char-edge-summary--expandable' : ''}}" bindtap="onToggleCharEdge" data-idx="{{index}}">
+          <view class="edge-names-row">
+            <text class="edge-name edge-name--source">{{item.sourceName}}</text>
+            <text class="edge-arrow-symbol">→</text>
+            <text class="edge-name edge-name--target">{{item.targetName}}</text>
+          </view>
+          <view class="edge-summary-right">
+            <text class="edge-base-relation">{{item.base_relation}}</text>
+            <text class="edge-expand-icon" wx:if="{{item.interactions && item.interactions.length > 0}}">{{expandedCharEdge === index ? '▲' : '▼'}}</text>
+          </view>
+        </view>
+        <view class="char-edge-interactions" wx:if="{{expandedCharEdge === index}}">
+          <view class="interaction-item" wx:for="{{item.interactions}}" wx:key="index" wx:for-item="ia" wx:for-index="iaIdx">
+            <view class="ia-header">
+              <text class="ia-action">{{ia.action}}</text>
+            </view>
+            <text class="ia-detail">{{ia.detail}}</text>
+          </view>
+        </view>
       </view>
     </view>
   </view>
 
-  <!-- ══ 时间线 ══ -->
-  <view class="timeline-panel" wx:if="{{archive.timelines && archive.timelines.length > 0}}">
+  <!-- ══ § 04 事件时间线 ══ -->
+  <view class="timeline-panel" id="sec-04" wx:if="{{archive.timelines && archive.timelines.length > 0}}">
     <view class="panel-header">
       <text class="panel-header-code">§ 04</text>
       <text class="panel-header-text">事件时间线</text>
     </view>
     <view class="timeline">
-      <view class="timeline-item" wx:for="{{archive.timelines}}" wx:key="index">
+      <view class="timeline-item" wx:for="{{archive.timelines}}" wx:key="id">
         <view class="timeline-left">
-          <view class="timeline-dot {{index === 0 ? 'timeline-dot--first' : ''}}"></view>
+          <view class="timeline-dot {{item.importanceInfo.className === 'tl-critical' ? 'timeline-dot--critical' : ''}} {{item.importanceInfo.className === 'tl-high' ? 'timeline-dot--high' : ''}}"></view>
           <view class="timeline-line" wx:if="{{index < archive.timelines.length - 1}}"></view>
         </view>
         <view class="timeline-right">
-          <text class="timeline-time">{{item.time}}</text>
-          <text class="timeline-event">{{item.event}}</text>
-          <text class="timeline-detail" wx:if="{{item.detail}}">{{item.detail}}</text>
+          <view class="tl-meta-row">
+            <text class="timeline-time">
+              <text wx:if="{{item.isFuzzy}}" class="tl-fuzzy-mark">约 </text>{{item.displayTime}}
+            </text>
+            <view class="tl-importance-badge {{item.importanceInfo.className}}" wx:if="{{item.importanceInfo.label}}">
+              <text class="tl-importance-text">{{item.importanceInfo.label}}</text>
+            </view>
+          </view>
+          <text class="timeline-event">{{item.displayTitle}}</text>
+          <text class="timeline-detail" wx:if="{{item.displayContent}}">{{item.displayContent}}</text>
+          <view class="tl-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+            <text class="tl-tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tlTag" wx:for-index="tlIdx">{{tlTag}}</text>
+          </view>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- ══ 证据链 ══ -->
-  <view class="evidence-panel" wx:if="{{archive.evidence && archive.evidence.length > 0}}">
+  <!-- ══ § 05 证据链线索 ══ -->
+  <view class="evidence-panel" id="sec-05" wx:if="{{archive.evidence && archive.evidence.nodes && archive.evidence.nodes.length > 0}}">
     <view class="panel-header">
       <text class="panel-header-code">§ 05</text>
       <text class="panel-header-text">证据链线索</text>
     </view>
-    <view class="evidence-list">
-      <view class="evidence-item" wx:for="{{archive.evidence}}" wx:key="index">
-        <view class="evidence-index">{{index + 1 < 10 ? '0' + (index + 1) : index + 1}}</view>
-        <view class="evidence-content">
-          <text class="evidence-title">{{item.title}}</text>
-          <text class="evidence-desc" wx:if="{{item.desc}}">{{item.desc}}</text>
-          <view class="evidence-tags" wx:if="{{item.tags}}">
-            <text class="evidence-tag" wx:for="{{item.tags}}" wx:key="*this">#{{item}}</text>
+
+    <!-- ── Canvas 关系图 ── -->
+    <view class="ev-graph-wrap">
+      <canvas type="2d" id="evidence-canvas" class="ev-canvas" bindtouchstart="onEvidenceCanvasTouchStart"></canvas>
+      <text class="ev-hint">◎ 点击节点查看详情</text>
+    </view>
+
+    <!-- ── 选中节点详情卡 ── -->
+    <view class="ev-detail" wx:if="{{evidenceSelectedNode}}">
+      <view class="ev-detail-header">
+        <view class="ev-detail-type-row">
+          <text class="ev-detail-icon">{{evidenceSelectedNode.typeInfo.icon}}</text>
+          <text class="ev-detail-type-lbl">{{evidenceSelectedNode.typeInfo.label}}</text>
+          <view class="evidence-rel-badge {{evidenceSelectedNode.reliabilityInfo.className}}">
+            <text>可信度{{evidenceSelectedNode.reliabilityInfo.label}}</text>
           </view>
         </view>
-        <view class="evidence-credibility" wx:if="{{item.credibility}}">
-          <text class="credibility-label">可信度</text>
-          <text class="credibility-value">{{item.credibility}}</text>
+        <text class="ev-detail-close" bindtap="onEvidenceDetailClose">×</text>
+      </view>
+      <text class="ev-detail-name">{{evidenceSelectedNode.name}}</text>
+      <text class="ev-detail-desc" wx:if="{{evidenceSelectedNode.description}}">{{evidenceSelectedNode.description}}</text>
+      <view class="ev-detail-source" wx:if="{{evidenceSelectedNode.source}}">
+        <text class="ev-src-label">来源</text>
+        <text class="ev-src-val">{{evidenceSelectedNode.source}}</text>
+      </view>
+    </view>
+
+    <!-- ── 关联关系文字列表 ── -->
+    <view class="ev-edge-list" wx:if="{{archive.evidence.edges && archive.evidence.edges.length > 0}}">
+      <view class="ev-edge-item" wx:for="{{archive.evidence.edges}}" wx:key="index">
+        <view class="ev-edge-chain">
+          <text class="ev-edge-node">{{item.sourceName}}</text>
+          <view class="ev-edge-mid">
+            <text class="ev-edge-rel">{{item.relationLabel}}</text>
+            <text class="ev-edge-arrow">→</text>
+          </view>
+          <text class="ev-edge-node">{{item.targetName}}</text>
         </view>
+        <text class="ev-edge-desc" wx:if="{{item.description}}">{{item.description}}</text>
       </view>
     </view>
   </view>
 
-  <!-- ══ 参考链接 ══ -->
-  <view class="refs-panel" wx:if="{{archive.ref_links && archive.ref_links.length > 0}}">
+  <!-- ══ § 06 参考来源 ══ -->
+  <view class="refs-panel" id="sec-06" wx:if="{{archive.ref_links && archive.ref_links.length > 0}}">
     <view class="panel-header">
       <text class="panel-header-code">§ 06</text>
       <text class="panel-header-text">参考来源</text>
@@ -175,6 +322,77 @@
     </view>
   </view>
 
+  <!-- ══ § 07 讨论区 ══ -->
+  <view class="comments-panel" id="sec-07">
+    <view class="panel-header">
+      <text class="panel-header-code">§ 07</text>
+      <text class="panel-header-text">讨论区 ({{comments.length}})</text>
+    </view>
+
+    <view class="comment-input-wrap">
+      <input
+        class="comment-input"
+        placeholder="留下你的观察或分析..."
+        placeholder-style="color: #6B7888; font-size: 26rpx;"
+        value="{{commentText}}"
+        bindinput="onCommentInput"
+        maxlength="500"
+      />
+      <view
+        class="comment-submit-btn {{commentSubmitting ? 'comment-submit-btn--loading' : ''}}"
+        bindtap="onCommentSubmit"
+      >
+        <text>{{commentSubmitting ? '...' : '发送'}}</text>
+      </view>
+    </view>
+
+    <view class="comment-list">
+      <view wx:if="{{commentsLoading && comments.length === 0}}" class="comment-loading">
+        <text class="comment-loading-text">LOADING DISCUSSION...</text>
+      </view>
+
+      <view class="comment-item" wx:for="{{comments}}" wx:key="id">
+        <view class="comment-avatar">
+          <image class="comment-avatar-img" src="{{item.user.avatar_url || ''}}" mode="aspectFill" lazy-load binderror="onCommentAvatarError" data-id="{{item.id}}" wx:if="{{item.user && item.user.avatar_url && !item.avatarError}}" />
+          <view class="comment-avatar-placeholder" wx:else>
+            <text>⬡</text>
+          </view>
+        </view>
+        <view class="comment-body">
+          <view class="comment-header">
+            <text class="comment-username">{{item.user ? item.user.nick_name : '匿名'}}</text>
+            <text class="comment-time">{{item.createdAtFmt}}</text>
+          </view>
+          <text class="comment-content">{{item.content}}</text>
+        </view>
+      </view>
+
+      <view class="comment-empty" wx:if="{{!commentsLoading && comments.length === 0}}">
+        <text class="comment-empty-text">暂无讨论记录，成为第一个留言的人</text>
+      </view>
+
+      <view class="comment-load-more" bindtap="onLoadMoreComments" wx:if="{{commentHasMore && comments.length > 0}}">
+        <text class="comment-load-more-text">— 查看更多讨论 —</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ══ 章节索引导航（固定右侧）══ -->
+  <view class="sec-nav {{navVisible ? 'sec-nav--visible' : ''}}" wx:if="{{navSections.length > 1}}">
+    <view
+      class="sec-nav-item sec-nav-item--{{item.kind}} {{activeSectionId === item.id ? 'sec-nav-item--active' : ''}}"
+      wx:for="{{navSections}}"
+      wx:key="id"
+      bindtap="onNavTap"
+      data-id="{{item.id}}"
+    >
+      <text class="sec-nav-code">{{item.code}}</text>
+      <view class="sec-nav-label-wrap">
+        <text class="sec-nav-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
   <!-- ══ 底部操作栏 ══ -->
   <view class="action-bar">
     <view class="action-btn action-btn--share" bindtap="onShare">
@@ -185,9 +403,16 @@
       <text class="action-icon">{{isCollected ? '◈' : '◇'}}</text>
       <text>{{isCollected ? '已收藏' : '收藏'}}</text>
     </view>
+    <view class="action-btn action-btn--edit" bindtap="onEditTap" wx:if="{{isAuthor}}">
+      <text class="action-icon">✎</text>
+      <text>编辑</text>
+    </view>
+    <view class="action-btn action-btn--report" bindtap="onReportTap" wx:if="{{!isAuthor}}">
+      <text class="action-icon">⚑</text>
+      <text>举报</text>
+    </view>
   </view>
 
-  <!-- 底部安全区 -->
   <view style="height: 160rpx;"></view>
 
 </view>

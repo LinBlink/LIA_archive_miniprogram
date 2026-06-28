@@ -3,12 +3,17 @@
     "pages/index/index",
     "pages/detail/detail",
     "pages/search/search",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/login/login",
+    "pages/create/create",
+    "pages/my-archives/my-archives",
+    "pages/my-collects/my-collects",
+    "pages/drafts/drafts"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#0A0D0F",
-    "navigationBarTitleText": "閾界档案馆",
+    "navigationBarTitleText": "閾界档案室",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#0A0D0F"
   },

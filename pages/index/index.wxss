@@ -12,7 +12,7 @@
 
 .sys-label {
   display: block;
-  font-size: 18rpx;
+  font-size: 20rpx;
   color: var(--accent-green);
   font-family: var(--font-mono);
   letter-spacing: 3rpx;
@@ -21,7 +21,7 @@
 
 .sys-id {
   display: block;
-  font-size: 16rpx;
+  font-size: 18rpx;
   color: var(--text-void);
   font-family: var(--font-mono);
   letter-spacing: 2rpx;
@@ -47,7 +47,7 @@
 }
 
 .status-text {
-  font-size: 18rpx;
+  font-size: 20rpx;
   color: var(--accent-green);
   font-family: var(--font-mono);
   letter-spacing: 2rpx;
@@ -70,7 +70,7 @@
 }
 
 .stat-num {
-  font-size: 48rpx;
+  font-size: 50rpx;
   font-weight: 700;
   color: var(--text-primary);
   font-family: var(--font-mono);
@@ -80,7 +80,7 @@
 .stat-num.ongoing { color: var(--accent-red); }
 
 .stat-label {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: var(--text-faint);
   margin-top: 6rpx;
   letter-spacing: 2rpx;
@@ -114,7 +114,7 @@
   background-color: var(--bg-card);
   border: 1rpx solid var(--border);
   border-radius: 6rpx;
-  font-size: 24rpx;
+  font-size: 26rpx;
   color: var(--text-faint);
   font-family: var(--font-mono);
   letter-spacing: 1rpx;
@@ -141,7 +141,23 @@
   border-radius: 8rpx;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
   position: relative;
+}
+
+/* 封面图横跨全宽 */
+.card-cover {
+  width: 100%;
+  height: 320rpx;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* 封面图下方的竖条 + 正文行 */
+.card-main {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
 }
 
 .card-side-bar { width: 6rpx; flex-shrink: 0; }
@@ -160,7 +176,7 @@
 }
 
 .archive-no {
-  font-size: 18rpx;
+  font-size: 20rpx;
   color: var(--accent-green);
   opacity: 0.5;
   font-family: var(--font-mono);
@@ -177,7 +193,7 @@
   display: inline-block;
   padding: 4rpx 12rpx;
   border-radius: 4rpx;
-  font-size: 18rpx;
+  font-size: 20rpx;
   font-family: var(--font-mono);
   letter-spacing: 2rpx;
   font-weight: 600;
@@ -185,7 +201,7 @@
 
 /* 标题 */
 .card-title {
-  font-size: 32rpx;
+  font-size: 34rpx;
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.4;
@@ -195,7 +211,7 @@
 
 /* 正文预览 */
 .card-preview {
-  font-size: 24rpx;
+  font-size: 26rpx;
   color: var(--text-ghost);
   line-height: 1.7;
   margin-bottom: 20rpx;
@@ -218,18 +234,18 @@
   display: inline-flex;
   align-items: center;
   gap: 6rpx;
-  font-size: 20rpx;
+  font-size: 22rpx;
   font-family: var(--font-mono);
 }
 
-.status-dot-inline { font-size: 16rpx; }
+.status-dot-inline { font-size: 18rpx; }
 .badge-status-ongoing { color: var(--accent-red); }
 .badge-status-closed  { color: var(--text-phantom); }
 
 .location-info { display: flex; align-items: center; gap: 6rpx; }
-.location-icon { font-size: 18rpx; color: var(--accent-green); }
+.location-icon { font-size: 20rpx; color: var(--accent-green); }
 .location-text {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: var(--text-ghost);
   max-width: 280rpx;
   white-space: nowrap;
@@ -237,12 +253,36 @@
   text-overflow: ellipsis;
 }
 
-.footer-right { display: flex; flex-direction: column; align-items: flex-end; }
+.footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6rpx; }
 .card-date {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: var(--text-phantom);
   font-family: var(--font-mono);
   letter-spacing: 1rpx;
+}
+
+.card-views {
+  font-size: 20rpx;
+  color: var(--text-void);
+  font-family: var(--font-mono);
+}
+
+/* ── 卡片标签 ── */
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.card-tag {
+  font-size: 20rpx;
+  color: var(--text-phantom);
+  font-family: var(--font-mono);
+  background-color: var(--bg-elevated);
+  border: 1rpx solid var(--border);
+  padding: 2rpx 12rpx;
+  border-radius: 4rpx;
 }
 
 /* 私密标记 */
@@ -254,7 +294,7 @@
   border: 1rpx solid var(--border-private);
   border-radius: 4rpx;
   padding: 4rpx 10rpx;
-  font-size: 18rpx;
+  font-size: 20rpx;
   color: var(--text-private);
   font-family: var(--font-mono);
 }
@@ -293,14 +333,14 @@
 }
 
 .load-more-text {
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: var(--accent-green);
   font-family: var(--font-mono);
   letter-spacing: 4rpx;
 }
 
 .no-more-text {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: var(--text-void);
   font-family: var(--font-mono);
   letter-spacing: 4rpx;
@@ -308,7 +348,7 @@
 
 /* ── 空状态 ── */
 .empty-icon {
-  font-size: 96rpx;
+  font-size: 98rpx;
   color: var(--border);
   display: block;
   text-align: center;
@@ -318,7 +358,7 @@
 /* ── FAB 浮动按钮 ── */
 .fab {
   position: fixed;
-  bottom: 160rpx;
+  bottom: 32rpx;
   right: 32rpx;
   background-color: var(--accent-red);
   border-radius: 48rpx;
@@ -330,5 +370,5 @@
   z-index: 100;
 }
 
-.fab-icon  { font-size: 36rpx; color: var(--text-primary); font-weight: 300; line-height: 1; }
-.fab-label { font-size: 26rpx; color: var(--text-primary); font-family: var(--font-mono); letter-spacing: 1rpx; }
+.fab-icon  { font-size: 38rpx; color: var(--text-primary); font-weight: 300; line-height: 1; }
+.fab-label { font-size: 28rpx; color: var(--text-primary); font-family: var(--font-mono); letter-spacing: 1rpx; }

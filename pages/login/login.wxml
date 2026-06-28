@@ -1,0 +1,109 @@
+<!-- pages/login/login.wxml -->
+<view class="page-container login-page">
+
+  <!-- 顶部 logo 区 -->
+  <view class="login-hero">
+    <text class="login-logo">⬡</text>
+    <text class="login-system-name">LIMINALITY ARCHIVE SYSTEM</text>
+    <text class="login-title">閾界档案室</text>
+    <text class="login-tagline">异常事件档案存储与研究平台</text>
+  </view>
+
+  <!-- 登录卡片 -->
+  <view class="login-card">
+    <view class="login-card-header">
+      <text class="login-card-code">§ AUTH</text>
+      <text class="login-card-label">身份认证</text>
+    </view>
+
+    <!-- Tab 切换 -->
+    <view class="auth-tabs">
+      <view class="auth-tab {{activeTab === 'phone' ? 'auth-tab--active' : ''}}" bindtap="onTabSwitch" data-tab="phone">
+        <text>手机号</text>
+      </view>
+      <view class="auth-tab {{activeTab === 'wechat' ? 'auth-tab--active' : ''}}" bindtap="onTabSwitch" data-tab="wechat">
+        <text>微信</text>
+      </view>
+    </view>
+
+    <!-- 手机号登录 / 注册 -->
+    <view class="login-card-body" wx:if="{{activeTab === 'phone'}}">
+      <view class="mode-switch">
+        <view class="mode-btn {{phoneMode === 'login' ? 'mode-btn--active' : ''}}" bindtap="onPhoneModeSwitch" data-mode="login">
+          <text>登录</text>
+        </view>
+        <view class="mode-btn {{phoneMode === 'register' ? 'mode-btn--active' : ''}}" bindtap="onPhoneModeSwitch" data-mode="register">
+          <text>注册</text>
+        </view>
+      </view>
+
+      <view class="input-group" wx:if="{{phoneMode === 'register'}}">
+        <view class="input-label">// NICKNAME</view>
+        <input class="auth-input" placeholder="档案员昵称（可留空）" value="{{nickName}}" bindinput="onNickNameInput" maxlength="20"/>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">// PHONE</view>
+        <input class="auth-input" type="number" placeholder="手机号" value="{{phone}}" bindinput="onPhoneInput" maxlength="20"/>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">// PASSWORD</view>
+        <input class="auth-input" password placeholder="密码（至少6位，任意字符）" value="{{password}}" bindinput="onPasswordInput"/>
+      </view>
+
+      <button
+        class="wx-login-btn {{loading ? 'wx-login-btn--loading' : ''}}"
+        bindtap="onPhoneSubmit"
+        disabled="{{loading}}"
+      >
+        <text class="wx-login-icon">{{loading ? '◌' : '◈'}}</text>
+        <text class="wx-login-text">{{loading ? '处理中...' : (phoneMode === 'login' ? '登录' : '注册')}}</text>
+      </button>
+
+      <text class="login-tip">登录即视为同意本档案室使用条款与隐私政策</text>
+    </view>
+
+    <!-- 微信登录 -->
+    <view class="login-card-body" wx:if="{{activeTab === 'wechat'}}">
+      <text class="login-prompt">档案员身份认证</text>
+      <text class="login-prompt-sub">使用微信账号快速接入，无需单独注册</text>
+
+      <button
+        class="wx-login-btn {{loading ? 'wx-login-btn--loading' : ''}}"
+        bindtap="onWxLoginTap"
+        disabled="{{loading}}"
+      >
+        <text class="wx-login-icon">{{loading ? '◌' : '◈'}}</text>
+        <text class="wx-login-text">{{loading ? '认证中...' : '微信一键登录'}}</text>
+      </button>
+
+      <text class="login-tip">登录即视为同意本档案室使用条款与隐私政策</text>
+    </view>
+  </view>
+
+  <!-- 功能预览 -->
+  <view class="login-features">
+    <view class="login-feature-item">
+      <text class="feature-dot">◎</text>
+      <text class="feature-text">投稿异常事件档案</text>
+    </view>
+    <view class="login-feature-item">
+      <text class="feature-dot">◇</text>
+      <text class="feature-text">收藏关注的案例</text>
+    </view>
+    <view class="login-feature-item">
+      <text class="feature-dot">⊞</text>
+      <text class="feature-text">参与档案讨论区</text>
+    </view>
+    <view class="login-feature-item">
+      <text class="feature-dot">⊡</text>
+      <text class="feature-text">管理草稿与投稿记录</text>
+    </view>
+  </view>
+
+  <view class="login-footer">
+    <text class="login-footer-text">// AUTHORIZED ACCESS ONLY //</text>
+  </view>
+
+</view>

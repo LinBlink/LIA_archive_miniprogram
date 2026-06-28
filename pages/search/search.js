@@ -7,56 +7,40 @@ Page({
     keyword: '',
     resultList: [],
     searched: false,
-    hotTags: ['集体失忆', '不明光源', '异常声响', '时间异常', '人员失踪', '幻视', '幻听', '动物异常', '机械故障', '温度异常'],
-    regions: [
-      { name: '广东省', count: 12 },
-      { name: '四川省', count: 8 },
-      { name: '福建省', count: 6 },
-      { name: '浙江省', count: 5 },
-      { name: '北京市', count: 4 },
-      { name: '云南省', count: 3 },
-    ],
+    loading: false,
   },
 
   onInput(e) {
     this.setData({ keyword: e.detail.value });
+    if (!e.detail.value.trim()) {
+      this.setData({ searched: false, resultList: [] });
+    }
   },
 
   onSearch() {
     const { keyword } = this.data;
     if (!keyword.trim()) return;
 
+    this.setData({ loading: true });
+
     app.request({
       url: '/archives/search',
-      data: { keyword, page: 1, pageSize: 20 },
+      data: { keyword: keyword.trim(), page: 1, pageSize: 20 },
       success: (res) => {
         this.setData({
           resultList: (res.data.list || []).map(processArchive),
           searched: true,
+          loading: false,
         });
       },
       fail: () => {
-        // mock 结果
-        this.setData({
-          resultList: [],
-          searched: true,
-        });
-      }
+        this.setData({ resultList: [], searched: true, loading: false });
+      },
     });
   },
 
   onClear() {
     this.setData({ keyword: '', searched: false, resultList: [] });
-  },
-
-  onTagTap(e) {
-    this.setData({ keyword: e.currentTarget.dataset.tag });
-    this.onSearch();
-  },
-
-  onRegionTap(e) {
-    this.setData({ keyword: e.currentTarget.dataset.region });
-    this.onSearch();
   },
 
   onCardTap(e) {

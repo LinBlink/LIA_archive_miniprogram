@@ -1,0 +1,418 @@
+<!-- pages/create/create.wxml -->
+<view class="page-container">
+
+  <view class="page-header">
+    <text class="page-header-eyebrow">NEW CASE FILE</text>
+    <text class="page-header-title">录入异常档案</text>
+    <view class="header-draft-link" bindtap="onOpenDrafts" wx:if="{{!editId}}">
+      <text class="header-draft-icon">⊡</text>
+      <text class="header-draft-text">草稿箱</text>
+    </view>
+  </view>
+
+  <!-- ══ § 01 基础信息 ══ -->
+  <view class="form-section">
+    <view class="section-header">
+      <text class="section-code">§ 01</text>
+      <text class="section-label">基础信息</text>
+    </view>
+
+    <view class="form-field">
+      <view class="field-label">档案标题 <text class="required">*</text></view>
+      <input class="field-input" placeholder="简要描述异常事件" placeholder-style="color:#6B7888;" value="{{title}}" bindinput="onTitleInput" maxlength="100" />
+      <view class="field-counter">{{title.length}}/100</view>
+    </view>
+
+    <view class="form-field">
+      <view class="field-label">档案类型 <text class="required">*</text></view>
+      <picker mode="selector" range="{{typeOptions}}" value="{{typeIndex}}" bindchange="onTypeChange">
+        <view class="field-picker">
+          <text class="picker-value">{{typeOptions[typeIndex]}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-field">
+      <view class="field-label">案件状态 <text class="required">*</text></view>
+      <picker mode="selector" range="{{statusOptions}}" value="{{statusIndex}}" bindchange="onStatusChange">
+        <view class="field-picker">
+          <view class="status-picker-val status-picker-val--{{statusIndex}}">
+            <text class="status-picker-dot">{{statusIndex === 0 ? '●' : '◆'}}</text>
+            <text class="picker-value">{{statusOptions[statusIndex]}}</text>
+          </view>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-field">
+      <view class="field-label">档案语言 <text class="required">*</text></view>
+      <picker mode="selector" range="{{langOptions}}" value="{{langIndex}}" bindchange="onLangChange">
+        <view class="field-picker">
+          <text class="picker-value">{{langOptions[langIndex]}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-field">
+      <view class="field-label">事发地点</view>
+      <input class="field-input" placeholder="省/市/区（可留空）" placeholder-style="color:#6B7888;" value="{{location_desc}}" bindinput="onLocationInput" maxlength="100" />
+    </view>
+
+    <view class="form-field">
+      <view class="field-label">事发日期</view>
+      <picker mode="date" value="{{occurred_date}}" bindchange="onDateChange">
+        <view class="field-picker">
+          <text class="picker-value {{occurred_date ? '' : 'picker-placeholder'}}">{{occurred_date || '选择日期（可留空）'}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-field" wx:if="{{occurred_date}}">
+      <view class="field-label">事发时刻 <text class="field-optional">精确到秒，可留空</text></view>
+      <view class="time-picker-row">
+        <picker class="time-picker" mode="multiSelector" range="{{timeRanges}}" value="{{timeValues}}" bindchange="onTimeChange">
+          <view class="field-picker">
+            <text class="picker-value {{occurred_time ? '' : 'picker-placeholder'}}">{{occurred_time || '选择时刻（可留空）'}}</text>
+            <text class="picker-arrow">›</text>
+          </view>
+        </picker>
+        <text class="time-clear-btn" wx:if="{{occurred_time}}" bindtap="onTimeClear">× 清除</text>
+      </view>
+    </view>
+
+    <view class="form-field form-field--inline form-field--no-border">
+      <view class="field-label-wrap">
+        <view class="field-label">私密档案</view>
+        <view class="field-hint">私密档案仅本人可见</view>
+      </view>
+      <switch color="#C8392B" checked="{{is_private}}" bindchange="onPrivateChange" />
+    </view>
+  </view>
+
+  <!-- ══ § 02 档案标签 ══ -->
+  <view class="form-section">
+    <view class="section-header">
+      <text class="section-code">§ 02</text>
+      <text class="section-label">档案标签</text>
+    </view>
+    <view class="tag-select-area">
+      <!-- 预置标签 + 已添加的自定义标签 -->
+      <view class="tag-chips-grid">
+        <view
+          wx:for="{{allTags}}"
+          wx:key="*this"
+          class="tag-chip-select {{tagsMap[item] ? 'tag-chip-select--active' : ''}}"
+          bindtap="onTagToggle"
+          data-tag="{{item}}"
+        >
+          <text class="tag-chip-text">{{item}}</text>
+          <text class="tag-chip-del" wx:if="{{customTagsMap[item]}}" catchtap="onDeleteCustomTag" data-tag="{{item}}">×</text>
+        </view>
+      </view>
+
+      <!-- 自定义标签输入 -->
+      <view class="custom-tag-row">
+        <input
+          class="custom-tag-input"
+          placeholder="自定义标签..."
+          placeholder-style="color:#6B7888; font-size:24rpx;"
+          value="{{customTagInput}}"
+          bindinput="onCustomTagInput"
+          maxlength="20"
+          confirm-type="done"
+          bindconfirm="onAddCustomTag"
+        />
+        <view class="custom-tag-add-btn" bindtap="onAddCustomTag">
+          <text>+ 添加</text>
+        </view>
+      </view>
+
+      <!-- 已选标签展示 -->
+      <view class="selected-tags-section" wx:if="{{tags.length > 0}}">
+        <text class="selected-tags-label">已选标签</text>
+        <view class="selected-tags-chips">
+          <view
+            wx:for="{{tags}}"
+            wx:key="*this"
+            class="selected-tag-chip"
+            bindtap="onRemoveSelectedTag"
+            data-tag="{{item}}"
+          >
+            <text>{{item}}</text>
+            <text class="selected-tag-remove">×</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ══ § 03 事件正文 ══ -->
+  <view class="form-section-head">
+    <view class="section-header section-header--top-only">
+      <text class="section-code">§ 03</text>
+      <text class="section-label">事件正文 <text class="required">*</text></text>
+      <text class="section-hint">支持 Markdown · 图片 · 视频</text>
+    </view>
+  </view>
+  <view class="form-textarea-card">
+
+    <!-- 正文工具栏 -->
+    <view class="content-toolbar">
+      <view
+        class="content-tool-btn {{imageUploading ? 'content-tool-btn--loading' : ''}}"
+        bindtap="onInsertImage"
+      >
+        <text class="content-tool-icon">⊞</text>
+        <text class="content-tool-label">{{imageUploading ? '上传中...' : '插入图片'}}</text>
+      </view>
+    </view>
+
+    <view class="ta-pad">
+      <textarea
+        class="field-textarea"
+        placeholder="详细描述异常事件的经过、现象、调查情况...&#10;&#10;支持 Markdown：**粗体** *斜体* ## 标题&#10;插入图片：点击上方「插入图片」按钮&#10;插入视频：![video](视频URL.mp4)"
+        placeholder-style="color:#6B7888; font-size:26rpx; line-height:1.8;"
+        value="{{content}}"
+        cursor="{{contentCursor}}"
+        bindinput="onContentInput"
+        bindfocus="onContentFocus"
+        maxlength="10000"
+        auto-height
+        adjust-position="{{false}}"
+      />
+    </view>
+    <view class="field-counter ta-counter">{{content.length}}/10000</view>
+  </view>
+
+  <!-- ══ 高级内容（可折叠）══ -->
+  <view class="advanced-toggle" bindtap="onToggleAdvanced">
+    <text class="advanced-toggle-icon">{{showAdvanced ? '▾' : '▸'}}</text>
+    <text class="advanced-toggle-label">高级内容（人物 / 时间线 / 链接 / 证据）</text>
+  </view>
+
+  
+      <view style="text-align:center; font-size:22rpx; color:var(--accent-yellow); padding:12rpx 0; word-wrap:break-word;">
+        高级内容若不填，系统会在后台AI生成仅一次
+      </view>
+
+  <view wx:if="{{showAdvanced}}">
+
+
+    <!-- ── § 04 人物关系 ── -->
+    <view class="form-section">
+      <view class="section-header">
+        <text class="section-code">§ 04</text>
+        <text class="section-label">人物关系</text>
+      </view>
+
+      <!-- 人物节点 -->
+      <view class="subsection-label">
+        <text class="subsection-label-text">人物档案</text>
+      </view>
+
+      <view class="dynamic-list" wx:if="{{characters.length > 0}}">
+        <view class="dynamic-item" wx:for="{{characters}}" wx:key="index">
+          <view class="dynamic-item-header">
+            <view class="char-node-badge">
+              <text class="char-node-id">u{{index + 1}}</text>
+            </view>
+            <text class="dynamic-item-remove" bindtap="onRemoveCharacter" data-index="{{index}}">✕</text>
+          </view>
+          <input class="field-input" placeholder="姓名 / 化名" placeholder-style="color:#6B7888;" value="{{item.name}}" bindinput="onCharNameInput" data-index="{{index}}" />
+          <input class="field-input" placeholder="角色 / 身份（如：受害者、嫌疑人）" placeholder-style="color:#6B7888;" value="{{item.role}}" bindinput="onCharRoleInput" data-index="{{index}}" />
+          <input class="field-input field-input--no-border" placeholder="人物描述（可选）" placeholder-style="color:#6B7888;" value="{{item.description}}" bindinput="onCharDescInput" data-index="{{index}}" />
+        </view>
+      </view>
+      <view class="add-item-btn add-item-btn--sub" bindtap="onAddCharacter">
+        <text>+ 添加人物</text>
+      </view>
+
+      <!-- 关系链（边） -->
+      <view class="subsection-label subsection-label--mid">
+        <text class="subsection-label-text">关系链</text>
+        <text class="subsection-hint" wx:if="{{characters.length < 2}}">至少2名人物后可添加</text>
+      </view>
+
+      <view class="dynamic-list" wx:if="{{char_edges.length > 0}}">
+        <view class="dynamic-item edge-item" wx:for="{{char_edges}}" wx:key="index" wx:for-item="edge" wx:for-index="edgeIdx">
+          <view class="dynamic-item-header">
+            <text class="dynamic-item-no">关系 {{edgeIdx + 1}}</text>
+            <text class="dynamic-item-remove" bindtap="onRemoveCharEdge" data-index="{{edgeIdx}}">✕</text>
+          </view>
+
+          <!-- 来源 → 目标 选择 -->
+          <view class="edge-st-row">
+            <view class="edge-st-picker">
+              <text class="sub-field-label">来源</text>
+              <picker mode="selector" range="{{charNameOptions}}" value="{{edge.source_idx}}" bindchange="onEdgeSourceChange" data-index="{{edgeIdx}}">
+                <view class="sub-picker edge-picker">
+                  <text class="edge-picker-val">{{charNameOptions[edge.source_idx] || '选择人物'}}</text>
+                  <text class="picker-arrow">›</text>
+                </view>
+              </picker>
+            </view>
+            <text class="edge-arrow-icon">→</text>
+            <view class="edge-st-picker">
+              <text class="sub-field-label">目标</text>
+              <picker mode="selector" range="{{charNameOptions}}" value="{{edge.target_idx}}" bindchange="onEdgeTargetChange" data-index="{{edgeIdx}}">
+                <view class="sub-picker edge-picker">
+                  <text class="edge-picker-val">{{charNameOptions[edge.target_idx] || '选择人物'}}</text>
+                  <text class="picker-arrow">›</text>
+                </view>
+              </picker>
+            </view>
+          </view>
+
+          <!-- 基础关系描述 -->
+          <input class="field-input" placeholder="关系类型（如：加害关系、同伙、亲属）" placeholder-style="color:#6B7888;" value="{{edge.base_relation}}" bindinput="onEdgeRelationInput" data-index="{{edgeIdx}}" />
+
+          <!-- 交互记录 -->
+          <view class="ia-section">
+            <view class="ia-section-header">
+              <text class="ia-section-title">交互记录 ({{edge.interactions.length}})</text>
+              <text class="ia-add-btn" bindtap="onAddInteraction" data-edge-idx="{{edgeIdx}}">+ 添加记录</text>
+            </view>
+            <view class="ia-list" wx:if="{{edge.interactions.length > 0}}">
+              <view class="ia-form-item" wx:for="{{edge.interactions}}" wx:key="index" wx:for-item="ia" wx:for-index="iaIdx">
+                <view class="ia-form-header">
+                  <text class="ia-form-no">记录 {{iaIdx + 1}}</text>
+                  <text class="dynamic-item-remove ia-remove" bindtap="onRemoveInteraction" data-edge-idx="{{edgeIdx}}" data-ia-idx="{{iaIdx}}">✕</text>
+                </view>
+                <input class="field-input" placeholder="行为（如：控制、杀害、协助）" placeholder-style="color:#6B7888;" value="{{ia.action}}" bindinput="onIaActionInput" data-edge-idx="{{edgeIdx}}" data-ia-idx="{{iaIdx}}" />
+                <input class="field-input field-input--no-border" placeholder="详情说明（可选）" placeholder-style="color:#6B7888;" value="{{ia.detail}}" bindinput="onIaDetailInput" data-edge-idx="{{edgeIdx}}" data-ia-idx="{{iaIdx}}" />
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="add-item-btn add-item-btn--edge {{characters.length < 2 ? 'add-item-btn--disabled' : ''}}" bindtap="onAddCharEdge">
+        <text>+ 添加关系</text>
+      </view>
+    </view>
+
+    <!-- ── § 05 事件时间线 ── -->
+    <view class="form-section">
+      <view class="section-header">
+        <text class="section-code">§ 05</text>
+        <text class="section-label">事件时间线</text>
+      </view>
+
+      <view class="dynamic-list" wx:if="{{timelines.length > 0}}">
+        <view class="dynamic-item" wx:for="{{timelines}}" wx:key="index">
+          <view class="dynamic-item-header">
+            <text class="dynamic-item-no">节点 {{index + 1}}</text>
+            <view class="tl-badges-row">
+              <text class="tl-importance-mini tl-imp-{{item.importance_index}}">{{importanceOptions[item.importance_index]}}</text>
+              <text class="tl-fuzzy-mini" wx:if="{{item.is_fuzzy}}">约</text>
+            </view>
+            <text class="dynamic-item-remove" bindtap="onRemoveTimeline" data-index="{{index}}">✕</text>
+          </view>
+          <input class="field-input" placeholder="时间显示（如：1996年1月10日 中午）" placeholder-style="color:#6B7888;" value="{{item.time_display}}" bindinput="onTlTimeInput" data-index="{{index}}" />
+          <input class="field-input" placeholder="事件标题" placeholder-style="color:#6B7888;" value="{{item.title}}" bindinput="onTlTitleInput" data-index="{{index}}" />
+          <input class="field-input" placeholder="事件详情（可选）" placeholder-style="color:#6B7888;" value="{{item.content}}" bindinput="onTlContentInput" data-index="{{index}}" />
+          <view class="sub-field-row">
+            <view class="sub-field-item">
+              <text class="sub-field-label">重要性</text>
+              <picker mode="selector" range="{{importanceOptions}}" value="{{item.importance_index}}" bindchange="onTlImportanceChange" data-index="{{index}}">
+                <view class="sub-picker">
+                  <text>{{importanceOptions[item.importance_index]}}</text>
+                  <text class="picker-arrow">›</text>
+                </view>
+              </picker>
+            </view>
+            <view class="sub-field-item sub-field-item--switch">
+              <text class="sub-field-label">时间模糊</text>
+              <switch color="#C8392B" checked="{{item.is_fuzzy}}" bindchange="onTlFuzzyChange" data-index="{{index}}" />
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="add-item-btn" bindtap="onAddTimeline">
+        <text>+ 添加时间节点</text>
+      </view>
+    </view>
+
+    <!-- ── § 06 参考链接 ── -->
+    <view class="form-section">
+      <view class="section-header">
+        <text class="section-code">§ 06</text>
+        <text class="section-label">参考链接</text>
+      </view>
+
+      <view class="dynamic-list" wx:if="{{ref_links.length > 0}}">
+        <view class="dynamic-item" wx:for="{{ref_links}}" wx:key="index">
+          <view class="dynamic-item-header">
+            <text class="dynamic-item-no">链接 {{index + 1}}</text>
+            <text class="dynamic-item-remove" bindtap="onRemoveRefLink" data-index="{{index}}">✕</text>
+          </view>
+          <input class="field-input" placeholder="来源标题" placeholder-style="color:#6B7888;" value="{{item.title}}" bindinput="onRefLinkTitleInput" data-index="{{index}}" />
+          <input class="field-input field-input--no-border" placeholder="URL（https://...）" placeholder-style="color:#6B7888;" value="{{item.url}}" bindinput="onRefLinkUrlInput" data-index="{{index}}" />
+        </view>
+      </view>
+      <view class="add-item-btn" bindtap="onAddRefLink">
+        <text>+ 添加链接</text>
+      </view>
+    </view>
+
+    <!-- ── § 07 证据链线索 ── -->
+    <view class="form-section">
+      <view class="section-header">
+        <text class="section-code">§ 07</text>
+        <text class="section-label">证据链线索</text>
+      </view>
+
+      <view class="dynamic-list" wx:if="{{evidence_nodes.length > 0}}">
+        <view class="dynamic-item ev-node-item" wx:for="{{evidence_nodes}}" wx:key="index">
+          <view class="dynamic-item-header">
+            <view class="ev-node-badge">
+              <text class="ev-node-id-text">{{index + 1 < 10 ? '0' + (index + 1) : (index + 1)}}</text>
+            </view>
+            <text class="dynamic-item-remove" bindtap="onRemoveEvidenceNode" data-index="{{index}}">✕</text>
+          </view>
+          <input class="field-input" placeholder="证据名称（如：监控截图、目击者证词）" placeholder-style="color:#6B7888;" value="{{item.name}}" bindinput="onEvNameInput" data-index="{{index}}" />
+          <view class="ev-picker-row">
+            <view class="ev-picker-item">
+              <text class="sub-field-label">类型</text>
+              <picker mode="selector" range="{{evidenceTypeOptions}}" value="{{item.type_index}}" bindchange="onEvTypeChange" data-index="{{index}}">
+                <view class="sub-picker">
+                  <text>{{evidenceTypeOptions[item.type_index]}}</text>
+                  <text class="picker-arrow">›</text>
+                </view>
+              </picker>
+            </view>
+            <view class="ev-picker-item">
+              <text class="sub-field-label">可信度</text>
+              <picker mode="selector" range="{{reliabilityOptions}}" value="{{item.reliability_index}}" bindchange="onEvReliabilityChange" data-index="{{index}}">
+                <view class="sub-picker {{item.reliability_index === 0 ? 'ev-rel-high' : item.reliability_index === 2 ? 'ev-rel-low' : 'ev-rel-mid'}}">
+                  <text>{{reliabilityOptions[item.reliability_index]}}</text>
+                  <text class="picker-arrow">›</text>
+                </view>
+              </picker>
+            </view>
+          </view>
+          <input class="field-input" placeholder="来源 / 发现地点（可选）" placeholder-style="color:#6B7888;" value="{{item.source}}" bindinput="onEvSourceInput" data-index="{{index}}" />
+          <input class="field-input field-input--no-border" placeholder="详细描述（可选）" placeholder-style="color:#6B7888;" value="{{item.description}}" bindinput="onEvDescInput" data-index="{{index}}" />
+        </view>
+      </view>
+      <view class="add-item-btn" bindtap="onAddEvidenceNode">
+        <text>+ 添加证据</text>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- ══ 底部操作 ══ -->
+  <view class="form-actions">
+    <view class="btn-draft" bindtap="onSaveDraft" wx:if="{{!editId}}"><text>保存草稿</text></view>
+    <view class="btn-submit {{submitting ? 'btn-submit--loading' : ''}}" bindtap="onSubmit">
+      <text>{{submitting ? (editId ? '保存中...' : '提交中...') : (editId ? '保存修改' : '提交档案')}}</text>
+    </view>
+  </view>
+
+  <view style="height: 60rpx;"></view>
+</view>

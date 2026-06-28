@@ -1,5 +1,5 @@
 /* =============================================
-   閾界档案馆 - 全局样式
+   閾界档案室 - 全局样式
    视觉语言：机密档案 / 调查局内部文件
    ============================================= */
 
@@ -11,8 +11,8 @@ page {
   --bg-private:     #1A1020;   /* 私密标记暗底 */
   --border-private: #3A1A5A;   /* 私密标记边框 */
   --text-private:   #7A4A9A;   /* 私密标记文字 */
-  --bg-closed:      #1A1A2A;   /* 已完结 badge 背景（冷紫灰）*/
-  --border-closed:  #2A2A3A;   /* 已完结 badge 边框 */
+  --bg-closed:      #1A1A2A;   /* 已结案 badge 背景（冷紫灰）*/
+  --border-closed:  #2A2A3A;   /* 已结案 badge 边框 */
   --bg-base:        #0A0D0F;   /* 最底层页面背景 */
   --bg-card:        #0F1318;   /* 卡片 / 面板 */
   --bg-elevated:    #161C22;   /* 悬浮层 / 高亮行 */
@@ -87,7 +87,7 @@ page {
 }
 
 .page-header-eyebrow {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: var(--accent-green);
   letter-spacing: 4rpx;
   font-family: var(--font-mono);
@@ -96,7 +96,7 @@ page {
 }
 
 .page-header-title {
-  font-size: 44rpx;
+  font-size: 46rpx;
   font-weight: 700;
   color: var(--text-primary);
   font-family: var(--font-mono);
@@ -141,7 +141,7 @@ page {
   display: inline-block;
   padding: 4rpx 14rpx;
   border-radius: 4rpx;
-  font-size: 20rpx;
+  font-size: 22rpx;
   font-family: var(--font-mono);
   letter-spacing: 2rpx;
   font-weight: 600;
@@ -191,7 +191,7 @@ page {
 
 /* 档案编号（水印风格）*/
 .archive-id {
-  font-size: 18rpx;
+  font-size: 20rpx;
   color: var(--text-void);
   font-family: var(--font-mono);
   letter-spacing: 3rpx;
@@ -204,7 +204,7 @@ page {
   border: none;
   border-radius: 6rpx;
   padding: 22rpx 40rpx;
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-family: var(--font-mono);
   letter-spacing: 2rpx;
 }
@@ -215,7 +215,7 @@ page {
   border: 1rpx solid var(--folk-border);
   border-radius: 6rpx;
   padding: 20rpx 36rpx;
-  font-size: 26rpx;
+  font-size: 28rpx;
 }
 
 /* 加载中 */
@@ -226,7 +226,7 @@ page {
 }
 
 .loading-text {
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: var(--accent-green);
   font-family: var(--font-mono);
   letter-spacing: 4rpx;
@@ -242,10 +242,50 @@ page {
 }
 
 .empty-state-text {
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: var(--text-phantom);
   font-family: var(--font-mono);
   letter-spacing: 2rpx;
   margin-top: 32rpx;
   text-align: center;
+}
+
+/* ══════════════════════════════════════════════
+   § 未结案标题抖动
+   ══════════════════════════════════════════════ */
+/* 更清晰的持续轻颤效果（稳定可读版） */
+@keyframes title-shiver {
+  0% {
+    transform: translateX(0px) ;
+    text-shadow: 0 0 0 rgba(248, 21, 0, 0);
+  }
+
+  20% {
+    transform: translateX(0.5px) ;
+    text-shadow: 5px 0px 5px rgba(215, 28, 11, 0.726);
+  }
+
+  40% {
+    transform: translateX(-0.5px) ;
+    text-shadow: -5px 0px 5px rgba(200,57,43,0.30);
+  }
+
+  60% {
+    transform: translateX(1px) ;
+    text-shadow: 5px 0px 5px rgba(255, 21, 0, 0.877);
+  }
+
+  80% {
+    transform: translateX(-1px) ;
+    text-shadow: -5px 0px 5px rgba(200,57,43,0.25);
+  }
+
+  100% {
+    transform: translateX(0px) ;
+    text-shadow: 0 0 0 rgb(254, 34, 13);
+  }
+}
+.title-shiver {
+  animation: title-shiver 0.3s linear infinite;
+  display: inline-block;
 }

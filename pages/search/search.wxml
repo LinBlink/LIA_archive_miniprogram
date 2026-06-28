@@ -13,7 +13,6 @@
         bindinput="onInput"
         bindconfirm="onSearch"
         confirm-type="search"
-        focus="{{false}}"
       />
       <view class="search-clear" bindtap="onClear" wx:if="{{keyword}}">
         <text>×</text>
@@ -24,45 +23,19 @@
     </view>
   </view>
 
-  <!-- 热门标签 -->
-  <view class="section" wx:if="{{!keyword && !searched}}">
-    <view class="section-title">
-      <text class="section-code">HOT</text>
-      <text class="section-label">热门检索</text>
-    </view>
-    <view class="tag-cloud">
-      <view
-        class="tag-item"
-        wx:for="{{hotTags}}"
-        wx:key="*this"
-        bindtap="onTagTap"
-        data-tag="{{item}}"
-      >{{item}}</view>
-    </view>
+  <!-- 搜索中 loading -->
+  <view class="search-loading" wx:if="{{loading}}">
+    <text class="loading-text">SEARCHING...</text>
   </view>
 
-  <!-- 地区分布 -->
-  <view class="section" wx:if="{{!keyword && !searched}}">
-    <view class="section-title">
-      <text class="section-code">GEO</text>
-      <text class="section-label">按地区浏览</text>
-    </view>
-    <view class="region-list">
-      <view
-        class="region-item"
-        wx:for="{{regions}}"
-        wx:key="name"
-        bindtap="onRegionTap"
-        data-region="{{item.name}}"
-      >
-        <text class="region-name">{{item.name}}</text>
-        <text class="region-count">{{item.count}} 条档案</text>
-      </view>
-    </view>
+  <!-- 未搜索时提示 -->
+  <view class="empty-state" wx:elif="{{!searched}}">
+    <text class="empty-icon">⬡</text>
+    <text class="empty-state-text">输入关键词开始检索</text>
   </view>
 
   <!-- 搜索结果 -->
-  <view class="results-wrap" wx:if="{{searched}}">
+  <view class="results-wrap" wx:elif="{{searched && !loading}}">
     <view class="results-header">
       <text class="results-count">找到 {{resultList.length}} 条记录</text>
       <text class="results-keyword">「{{keyword}}」</text>
@@ -82,13 +55,20 @@
             <text class="archive-no">{{item.archiveNo}}</text>
             <text class="badge {{item.typeInfo.className}}">{{item.typeInfo.code}}</text>
           </view>
-          <view class="card-title">{{item.title}}</view>
+          <view class="card-title {{item.statusInfo.className === 'badge-status-ongoing' ? 'title-shiver' : ''}}">{{item.title}}</view>
           <view class="card-preview">{{item.contentPreview}}</view>
           <view class="card-footer">
             <view class="status-badge {{item.statusInfo.className}}">
               <text>{{item.statusInfo.dot}} {{item.statusInfo.label}}</text>
             </view>
-            <text class="card-date">{{item.occurredAtFmt}}</text>
+            <view class="card-footer-right">
+              <text class="card-date">{{item.occurredAtFmt}}</text>
+              <text class="card-views">◎ {{item.view_count || 0}}</text>
+              <view class="location-info" wx:if="{{item.location_desc}}">
+                <text class="location-icon">◎</text>
+                <text class="location-text">{{item.location_desc}}</text>
+              </view>
+            </view>
           </view>
         </view>
       </view>

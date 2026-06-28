@@ -4,8 +4,8 @@
   <!-- ══ 顶部系统状态栏 ══ -->
   <view class="sys-header">
     <view class="sys-header-left">
-      <text class="sys-label">閾界档案馆 LIMINALITY ARCHIVE SYSTEM</text>
-      <text class="sys-id">版本号 V0.1</text>
+      <text class="sys-label">閾界档案室 LIMINALITY ARCHIVE SYSTEM</text>
+      <text class="sys-id">版本号 V0.2</text>
     </view>
     <view class="sys-status">
       <view class="status-dot {{isOnline ? 'status-dot--active' : ''}}"></view>
@@ -13,7 +13,7 @@
     </view>
   </view>
 
-  <view style="text-align:center">{{isOnline ? '' : '服务器离线，当前展示示例内容'}}</view>
+  <view style="text-align:center; font-size:22rpx; color:var(--accent-red); padding:12rpx 0;" wx:if="{{!isOnline}}">服务器离线，当前展示示例内容</view>
 
   <!-- ══ 档案统计概览 ══ -->
   <view class="stats-bar">
@@ -29,45 +29,21 @@
     <view class="stat-divider"></view>
     <view class="stat-item">
       <text class="stat-num">{{closedCount}}</text>
-      <text class="stat-label">已完结</text>
+      <text class="stat-label">已结案</text>
     </view>
   </view>
 
-  <!-- ══ 筛选标签栏 ══ -->
+  <!-- ══ 筛选标签栏：类型/状态 ══ -->
   <scroll-view class="filter-scroll" scroll-x>
     <view class="filter-row">
-      <view
-        class="filter-chip {{activeFilter === 'all' ? 'filter-chip--active' : ''}}"
-        bindtap="onFilterChange"
-        data-value="all"
-      >全部</view>
-      <view
-        class="filter-chip {{activeFilter === 'ongoing' ? 'filter-chip--active' : ''}}"
-        bindtap="onFilterChange"
-        data-value="ongoing"
-      >
+      <view class="filter-chip {{activeFilter === 'all' ? 'filter-chip--active' : ''}}" bindtap="onFilterChange" data-value="all">全部</view>
+      <view class="filter-chip {{activeFilter === 'ongoing' ? 'filter-chip--active' : ''}}" bindtap="onFilterChange" data-value="ongoing">
         <view class="chip-dot chip-dot--red"></view>调查中
       </view>
-      <view
-        class="filter-chip {{activeFilter === 'closed' ? 'filter-chip--active' : ''}}"
-        bindtap="onFilterChange"
-        data-value="closed"
-      >已完结</view>
-      <view
-        class="filter-chip {{activeFilter === '0' ? 'filter-chip--active' : ''}}"
-        bindtap="onFilterChange"
-        data-value="0"
-      >民间档案</view>
-      <view
-        class="filter-chip {{activeFilter === '1' ? 'filter-chip--active' : ''}}"
-        bindtap="onFilterChange"
-        data-value="1"
-      >官方档案</view>
-      <view
-        class="filter-chip {{activeFilter === '2' ? 'filter-chip--active' : ''}}"
-        bindtap="onFilterChange"
-        data-value="2"
-      >第三方</view>
+      <view class="filter-chip {{activeFilter === 'closed' ? 'filter-chip--active' : ''}}" bindtap="onFilterChange" data-value="closed">已结案</view>
+      <view class="filter-chip {{activeFilter === '0' ? 'filter-chip--active' : ''}}" bindtap="onFilterChange" data-value="0">民间档案</view>
+      <view class="filter-chip {{activeFilter === '1' ? 'filter-chip--active' : ''}}" bindtap="onFilterChange" data-value="1">官方档案</view>
+      <view class="filter-chip {{activeFilter === '2' ? 'filter-chip--active' : ''}}" bindtap="onFilterChange" data-value="2">第三方</view>
     </view>
   </scroll-view>
 
@@ -85,18 +61,24 @@
 
     <!-- 档案卡片 -->
     <block wx:elif="{{archiveList.length > 0}}">
-      <view
-        class="archive-card"
-        wx:for="{{archiveList}}"
-        wx:key="id"
-        bindtap="onCardTap"
-        data-id="{{item.id}}"
-      >
-        <!-- 左侧类型色条 -->
+      <view class="archive-card" wx:for="{{archiveList}}" wx:key="id" bindtap="onCardTap" data-id="{{item.id}}">
+
+        <!-- 封面图（取自正文第一张图片），置于顶部横跨全宽 -->
+        <image
+          wx:if="{{item.coverImage && !item.coverError}}"
+          class="card-cover"
+          src="{{item.coverImage}}"
+          mode="aspectFill"
+          lazy-load
+          binderror="onCoverError"
+          data-id="{{item.id}}"
+        />
+
+        <!-- 竖条 + 正文信息 -->
+        <view class="card-main">
         <view class="card-side-bar card-side-bar--{{item.type}}"></view>
 
         <view class="card-body">
-          <!-- 顶部元信息行 -->
           <view class="card-meta-row">
             <text class="archive-no">{{item.archiveNo}}</text>
             <view class="card-badges">
@@ -105,21 +87,19 @@
             </view>
           </view>
 
-          <!-- 标题 -->
-          <view class="card-title">{{item.title}}</view>
-
-          <!-- 正文预览 -->
+          <view class="card-title {{item.statusInfo.className === 'badge-status-ongoing' ? 'title-shiver' : ''}}">{{item.title}}</view>
           <view class="card-preview">{{item.contentPreview}}</view>
 
-          <!-- 底部信息行 -->
+          <view class="card-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+            <text class="card-tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+          </view>
+
           <view class="card-footer">
             <view class="footer-left">
-              <!-- 状态指示器 -->
               <view class="status-badge {{item.statusInfo.className}}">
                 <text class="status-dot-inline">{{item.statusInfo.dot}}</text>
                 <text>{{item.statusInfo.label}}</text>
               </view>
-              <!-- 地点 -->
               <view class="location-info" wx:if="{{item.location_desc}}">
                 <text class="location-icon">◎</text>
                 <text class="location-text">{{item.location_desc}}</text>
@@ -127,17 +107,17 @@
             </view>
             <view class="footer-right">
               <text class="card-date">{{item.occurredAtFmt}}</text>
+              <text class="card-views">◎ {{item.view_count || 0}}</text>
             </view>
           </view>
 
-          <!-- 私密标记 -->
           <view class="private-badge" wx:if="{{item.is_private === 1}}">
             <text>⚿ 私密</text>
           </view>
         </view>
+        </view><!-- /card-main -->
       </view>
 
-      <!-- 加载更多 -->
       <view class="load-more" bindtap="onLoadMore" wx:if="{{hasMore}}">
         <text class="load-more-text">— 载入更多档案 —</text>
       </view>

@@ -1,0 +1,61 @@
+<!-- pages/drafts/drafts.wxml -->
+<view class="page-container">
+
+  <!-- 顶部栏 -->
+  <view class="drafts-header">
+    <view class="drafts-header-left">
+      <text class="drafts-eyebrow">LOCAL DRAFTS</text>
+      <text class="drafts-title">草稿箱</text>
+    </view>
+    <view class="drafts-header-right">
+      <view class="drafts-count-badge" wx:if="{{drafts.length > 0}}">
+        <text class="drafts-count">{{drafts.length}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作栏 -->
+  <view class="drafts-toolbar" wx:if="{{drafts.length > 0}}">
+    <view class="toolbar-btn toolbar-btn--new" bindtap="onNewDraft">
+      <text>＋ 新建档案</text>
+    </view>
+    <view class="toolbar-btn toolbar-btn--clear" bindtap="onClearAll">
+      <text>清空全部</text>
+    </view>
+  </view>
+
+  <!-- 草稿列表 -->
+  <view class="drafts-list" wx:if="{{!empty}}">
+    <view class="draft-card" wx:for="{{drafts}}" wx:key="id" bindtap="onDraftTap" data-id="{{item.id}}">
+      <view class="draft-card-inner">
+        <view class="draft-top-row">
+          <text class="draft-title">{{item.displayTitle}}</text>
+          <text class="draft-time">{{item.displayTime}}</text>
+        </view>
+        <text class="draft-preview" wx:if="{{item.displayPreview !== '（无内容）'}}">{{item.displayPreview}}</text>
+        <text class="draft-preview draft-preview--empty" wx:else>{{item.displayPreview}}</text>
+        <view class="draft-footer">
+          <view class="draft-meta">
+            <text class="draft-meta-item" wx:if="{{item.tags && item.tags.length > 0}}">{{item.tags.length}} 个标签</text>
+            <text class="draft-meta-item" wx:if="{{item.characters && item.characters.length > 0}}">{{item.characters.length}} 个人物</text>
+            <text class="draft-meta-item" wx:if="{{item.timelines && item.timelines.length > 0}}">{{item.timelines.length}} 条时间线</text>
+          </view>
+          <view class="draft-delete-btn" catchtap="onDeleteTap" data-id="{{item.id}}">
+            <text class="draft-delete-icon">⊗</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{empty}}">
+    <text class="empty-icon">⊡</text>
+    <text class="empty-state-text">草稿箱为空</text>
+    <text class="empty-state-sub">在录入档案时点击「保存草稿」即可暂存</text>
+    <view class="empty-new-btn" bindtap="onNewDraft">
+      <text>开始录入档案</text>
+    </view>
+  </view>
+
+</view>

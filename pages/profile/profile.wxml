@@ -1,32 +1,70 @@
 <!-- pages/profile/profile.wxml -->
 <view class="page-container">
 
-  <!-- 用户信息头部 -->
-  <view class="profile-header">
+  <!-- ══ 未登录状态 ══ -->
+  <view class="login-prompt-banner" wx:if="{{!isLoggedIn}}">
+    <view class="login-prompt-inner">
+      <text class="login-prompt-logo">⬡</text>
+      <text class="login-prompt-title">档案员尚未认证</text>
+      <text class="login-prompt-sub">登录后可投稿档案、收藏案例、参与讨论</text>
+      <view class="login-prompt-btn" bindtap="onLoginTap">
+        <text>立即登录 / 注册</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ══ 用户信息头部（已登录）══ -->
+  <view class="profile-header" wx:if="{{isLoggedIn && userInfo}}">
     <view class="user-avatar-wrap">
-      <image class="user-avatar" src="{{userInfo.avatarUrl || ''}}" mode="aspectFill" wx:if="{{userInfo.avatarUrl}}"/>
+      <image class="user-avatar" src="{{userInfo.avatar_url || ''}}" mode="aspectFill" wx:if="{{userInfo.avatar_url}}"/>
       <view class="user-avatar-placeholder" wx:else>
         <text class="avatar-icon">⬡</text>
       </view>
       <view class="user-level-badge">Lv.{{userLevel}}</view>
     </view>
-    <view class="user-info">
-      <text class="user-name">{{userInfo.nickName || '匿名调查员'}}</text>
-      <text class="user-id-str">UID: {{uidStr}}</text>
+
+    <!-- 普通展示态 -->
+    <view class="user-info" wx:if="{{!editMode}}">
+      <view class="user-name-row">
+        <text class="user-name">{{userInfo.nick_name || '匿名调查员'}}</text>
+        <view class="edit-profile-btn" bindtap="onEditProfile">
+          <text class="edit-profile-icon">✎</text>
+        </view>
+      </view>
       <view class="user-tag-row">
-        <view class="user-tag">档案研究者</view>
+        <view class="user-tag">{{levelLabel}}</view>
+      </view>
+    </view>
+
+    <!-- 编辑态 -->
+    <view class="user-info user-info--editing" wx:else>
+      <view class="edit-field-label"><text>昵称</text></view>
+      <input
+        class="edit-nick-input"
+        value="{{editNickName}}"
+        maxlength="20"
+        placeholder="最多20个字符"
+        placeholder-class="edit-nick-placeholder"
+        bindinput="onEditNickNameInput"
+        focus="{{editMode}}"
+      />
+      <view class="edit-actions">
+        <view class="edit-btn edit-btn--cancel" bindtap="onCancelEdit"><text>取消</text></view>
+        <view class="edit-btn edit-btn--save {{editSaving ? 'edit-btn--saving' : ''}}" bindtap="onSaveProfile">
+          <text>{{editSaving ? '保存中' : '保存'}}</text>
+        </view>
       </view>
     </view>
   </view>
 
-  <!-- 统计数据行 -->
-  <view class="my-stats">
-    <view class="my-stat-item">
+  <!-- ══ 统计数据行 ══ -->
+  <view class="my-stats" wx:if="{{isLoggedIn}}">
+    <view class="my-stat-item" bindtap="onMyArchives">
       <text class="my-stat-num">{{myArchiveCount}}</text>
       <text class="my-stat-label">我的档案</text>
     </view>
     <view class="stat-divider"></view>
-    <view class="my-stat-item">
+    <view class="my-stat-item" bindtap="onMyCollects">
       <text class="my-stat-num">{{myCollectCount}}</text>
       <text class="my-stat-label">收藏</text>
     </view>
@@ -37,7 +75,45 @@
     </view>
   </view>
 
-  <!-- 功能列表 -->
+  <!-- ══ 设置 ══ -->
+  <view class="settings-section">
+    <view class="settings-group">
+      <view class="menu-item">
+        <text class="menu-icon">◎</text>
+        <text class="menu-label">章节索引隐藏延迟</text>
+        <picker
+          mode="selector"
+          range="{{navDelayOptions}}"
+          range-key="label"
+          value="{{navDelayIndex}}"
+          bindchange="onNavDelayChange"
+        >
+          <view class="settings-picker-val">
+            <text class="settings-val-text">{{navDelayOptions[navDelayIndex].label}}</text>
+            <text class="menu-arrow">›</text>
+          </view>
+        </picker>
+      </view>
+      <view class="menu-item">
+        <text class="menu-icon">⊠</text>
+        <text class="menu-label">档案显示语言</text>
+        <picker
+          mode="selector"
+          range="{{langOptions}}"
+          range-key="label"
+          value="{{langIndex}}"
+          bindchange="onLangChange"
+        >
+          <view class="settings-picker-val">
+            <text class="settings-val-text">{{langOptions[langIndex].label}}</text>
+            <text class="menu-arrow">›</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+  </view>
+
+  <!-- ══ 功能列表 ══ -->
   <view class="menu-section">
     <view class="menu-group">
       <view class="menu-item" bindtap="onMyArchives">
@@ -60,21 +136,29 @@
     <view class="menu-group">
       <view class="menu-item" bindtap="onAbout">
         <text class="menu-icon">⬡</text>
-        <text class="menu-label">关于閾界档案馆</text>
+        <text class="menu-label">关于閾界档案室</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-item" bindtap="onFeedback">
         <text class="menu-icon">⊞</text>
-        <text class="menu-label">意见反馈</text>
+        <text class="menu-label">投稿档案</text>
         <text class="menu-arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 登出按钮（已登录时显示）-->
+    <view class="menu-group" wx:if="{{isLoggedIn}}">
+      <view class="menu-item menu-item--danger" bindtap="onLogoutTap">
+        <text class="menu-icon menu-icon--danger">⊗</text>
+        <text class="menu-label menu-label--danger">退出登录</text>
       </view>
     </view>
   </view>
 
   <!-- 系统信息 -->
   <view class="system-info">
-    <text class="sys-info-text">LIMINALITY ARCHIVE SYSTEM</text>
-    <text class="sys-info-text">本档案馆仅收录未经官方完整解释的异常事件</text>
+    <text class="sys-info-text">LIMINALITY ARCHIVE SYSTEM v0.2</text>
+    <text class="sys-info-text">本档案室仅收录未经官方完整解释的异常事件</text>
     <text class="sys-info-text">所有档案均来自用户投稿，仅供研究参考</text>
   </view>
 

@@ -1,0 +1,61 @@
+<!-- pages/my-collects/my-collects.wxml -->
+<view class="page-container">
+
+  <view class="page-header">
+    <text class="page-header-eyebrow">BOOKMARKED FILES</text>
+    <text class="page-header-title">我的收藏</text>
+  </view>
+
+  <!-- 加载骨架 -->
+  <block wx:if="{{loading}}">
+    <view class="skeleton-card" wx:for="{{[1,2,3]}}" wx:key="index">
+      <view class="skeleton-line skeleton-line--short"></view>
+      <view class="skeleton-line"></view>
+      <view class="skeleton-line skeleton-line--mid"></view>
+    </view>
+  </block>
+
+  <!-- 列表 -->
+  <block wx:elif="{{archiveList.length > 0}}">
+    <view class="archive-card" wx:for="{{archiveList}}" wx:key="id">
+      <view class="card-side-bar card-side-bar--{{item.type}}"></view>
+      <view class="card-body" bindtap="onCardTap" data-id="{{item.id}}">
+        <view class="card-meta-row">
+          <text class="archive-no">{{item.archiveNo}}</text>
+          <view class="card-badges">
+            <text class="badge {{item.typeInfo.className}}">{{item.typeInfo.code}}</text>
+            <text class="badge lang-badge">{{item.langCode}}</text>
+          </view>
+        </view>
+        <view class="card-title">{{item.title}}</view>
+        <view class="card-preview">{{item.contentPreview}}</view>
+        <view class="card-footer">
+          <view class="footer-left">
+            <view class="status-badge {{item.statusInfo.className}}">
+              <text class="status-dot-inline">{{item.statusInfo.dot}}</text>
+              <text>{{item.statusInfo.label}}</text>
+            </view>
+          </view>
+          <text class="card-date">{{item.occurredAtFmt}}</text>
+        </view>
+      </view>
+      <view class="card-uncollect-btn" bindtap="onUncollectTap" data-id="{{item.id}}">
+        <text>◈</text>
+      </view>
+    </view>
+
+    <view class="load-more" bindtap="onLoadMore" wx:if="{{hasMore}}">
+      <text class="load-more-text">— 载入更多 —</text>
+    </view>
+    <view class="no-more" wx:else>
+      <text class="no-more-text">// END OF BOOKMARKS //</text>
+    </view>
+  </block>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <text class="empty-icon">◇</text>
+    <text class="empty-state-text">你还没有收藏任何档案\n在档案详情页点击收藏</text>
+  </view>
+
+</view>
