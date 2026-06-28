@@ -5,7 +5,7 @@
   <view class="sys-header">
     <view class="sys-header-left">
       <text class="sys-label">閾界档案室 LIMINALITY ARCHIVE SYSTEM</text>
-      <text class="sys-id">版本号 V0.2</text>
+      <text class="sys-id">版本号 V0.2 原型阶段</text>
     </view>
     <view class="sys-status">
       <view class="status-dot {{isOnline ? 'status-dot--active' : ''}}"></view>

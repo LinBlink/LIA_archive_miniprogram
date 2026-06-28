@@ -157,9 +157,17 @@
 
   <!-- 系统信息 -->
   <view class="system-info">
+  
+    <image src="../../images/LIA_archive_room.jpg" style="height:200rpx; border: solid 1px lightgreen;" mode="aspectFill"   />
     <text class="sys-info-text">LIMINALITY ARCHIVE SYSTEM v0.2</text>
     <text class="sys-info-text">本档案室仅收录未经官方完整解释的异常事件</text>
     <text class="sys-info-text">所有档案均来自用户投稿，仅供研究参考</text>
   </view>
+
+  <view class="system-info">
+  </view>
+
+  <!-- <image class="user-avatar" src="{{userInfo.avatar_url || ''}}" mode="aspectFill" wx:if="{{userInfo.avatar_url}}"/> -->
+
 
 </view>

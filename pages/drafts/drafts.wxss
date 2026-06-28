@@ -47,6 +47,31 @@
   font-weight: 700;
 }
 
+/* ── 本地存储提示 ── */
+.drafts-notice {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin: 20rpx 24rpx 0;
+  padding: 16rpx 20rpx;
+  background-color: var(--bg-elevated);
+  border: 1rpx solid var(--border-faint);
+  border-left: 3rpx solid var(--accent-orange);
+  border-radius: 6rpx;
+}
+
+.drafts-notice-icon {
+  font-size: 24rpx;
+  color: var(--accent-orange);
+  flex-shrink: 0;
+}
+
+.drafts-notice-text {
+  font-size: 22rpx;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 /* ── 工具栏 ── */
 .drafts-toolbar {
   display: flex;

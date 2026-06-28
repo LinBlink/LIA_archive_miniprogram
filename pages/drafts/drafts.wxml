@@ -14,6 +14,12 @@
     </view>
   </view>
 
+  <!-- 本地存储提示 -->
+  <view class="drafts-notice">
+    <text class="drafts-notice-icon">⚠</text>
+    <text class="drafts-notice-text">草稿仅存于本机，切换设备后内容不同步</text>
+  </view>
+
   <!-- 操作栏 -->
   <view class="drafts-toolbar" wx:if="{{drafts.length > 0}}">
     <view class="toolbar-btn toolbar-btn--new" bindtap="onNewDraft">

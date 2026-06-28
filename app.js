@@ -2,8 +2,9 @@
 App({
   globalData: {
     userInfo: null,
-    // baseUrl: 'http://liminality.asia:10891',
-    baseUrl: 'http://192.168.2.114:10891',
+    baseUrl: 'https://yjsws.cn/api',
+    // baseUrl: 'https://liminality.asia/api',
+    // baseUrl: 'http://192.168.2.114:10891',
     token: '',
     langFilter: -1, // -1=全部, 0=中文, 1=English
     navDelay: 2000, // 章节索引自动隐藏延迟（ms），0=不隐藏
